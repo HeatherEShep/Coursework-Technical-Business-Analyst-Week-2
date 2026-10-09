@@ -1,0 +1,2708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart-Recovery Customer Portal — Phase 1 Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --primary-dark: #172554;
+      --primary-50: #eff6ff;
+      --primary-100: #dbeafe;
+      --teal-600: #0d9488;
+      --teal-50: #f0fdfa;
+      --success: #15803d;
+      --success-bg: #f0fdf4;
+      --warning: #b45309;
+      --warning-bg: #fffbeb;
+      --danger: #b91c1c;
+      --danger-bg: #fef2f2;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-600: #475569;
+      --slate-700: #334155;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: #0b1329;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(13, 148, 136, 0.12) 0px, transparent 50%);
+      color: var(--slate-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Top Utility Bar for BA / Prototype Navigation */
+    .ba-toolbar {
+      background: #0f172a;
+      color: #94a3b8;
+      border-bottom: 1px solid #1e293b;
+      padding: 8px 24px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .ba-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .ba-badge {
+      background: #1e293b;
+      color: #38bdf8;
+      border: 1px solid #0284c7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .ba-toolbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .screen-pill {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+      padding: 3px 9px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .screen-pill:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .screen-pill.active {
+      background: var(--primary-light);
+      border-color: var(--primary-light);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .ba-toggle-btn {
+      background: transparent;
+      border: 1px solid #334155;
+      color: #f1f5f9;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .ba-toggle-btn:hover {
+      background: #1e293b;
+      border-color: #64748b;
+    }
+
+    /* Main Container Shell */
+    .app-shell {
+      max-width: 1080px;
+      width: 100%;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    /* BA Traceability Drawer / Spec Banner */
+    .ba-traceability-card {
+      background: #0f172a;
+      border: 1px solid #1e3a8a;
+      border-left: 4px solid #38bdf8;
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      color: #e2e8f0;
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: var(--shadow-md);
+      transition: all 0.3s ease;
+    }
+
+    .ba-traceability-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+
+    .ba-traceability-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .ba-tag {
+      background: #1e293b;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      border: 1px solid #334155;
+    }
+
+    .ba-tag-jira {
+      color: #60a5fa;
+      border-color: #1d4ed8;
+    }
+
+    .ba-tag-bpmn {
+      color: #34d399;
+      border-color: #059669;
+    }
+
+    .ba-tag-rule {
+      color: #fbbf24;
+      border-color: #d97706;
+    }
+
+    /* Portal Card Main Viewport */
+    .portal-frame {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 640px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Portal Header */
+    .portal-header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-text span {
+      font-size: 0.75rem;
+      color: var(--slate-500);
+      display: block;
+    }
+
+    .portal-header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .trust-badge-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--slate-600);
+    }
+
+    .trust-badge-pill svg {
+      color: var(--teal-600);
+    }
+
+    .session-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--slate-600);
+      background: var(--slate-100);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--teal-600);
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 148, 136, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(13, 148, 136, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(13, 148, 136, 0); }
+    }
+
+    /* Screen Views */
+    .portal-screen {
+      display: none;
+      padding: 36px 40px;
+      animation: fadeIn 0.3s ease-in-out;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .portal-screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common Typography & Layout */
+    .screen-header-block {
+      margin-bottom: 24px;
+    }
+
+    .screen-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .screen-subtitle {
+      font-size: 0.95rem;
+      color: var(--slate-600);
+      max-width: 650px;
+    }
+
+    /* Trust & Regulatory Banner */
+    .reg-footer-banner {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid var(--slate-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.75rem;
+      color: var(--slate-500);
+    }
+
+    .fca-badges {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .fca-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Buttons & Controls */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-light);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      background: var(--slate-100);
+      color: var(--slate-700);
+      border-color: var(--slate-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--slate-200);
+      color: var(--slate-900);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary-light);
+      border-color: var(--primary-light);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary-50);
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      color: var(--danger);
+      border-color: #fca5a5;
+    }
+
+    .btn-danger-outline:hover {
+      background: var(--danger-bg);
+    }
+
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 0.82rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .btn-lg {
+      padding: 14px 28px;
+      font-size: 1.05rem;
+      border-radius: var(--radius-lg);
+    }
+
+    /* Screen 1: Landing Page Styles */
+    .landing-hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 40px;
+      align-items: center;
+      padding: 20px 0 30px;
+    }
+
+    .hero-content h2 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-content h2 span {
+      color: var(--primary-light);
+    }
+
+    .hero-content p {
+      font-size: 1.05rem;
+      color: var(--slate-600);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .landing-card-preview {
+      background: linear-gradient(135deg, var(--slate-50) 0%, var(--primary-50) 100%);
+      border: 1px solid var(--primary-100);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.92rem;
+      color: var(--slate-700);
+    }
+
+    .feature-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--primary-100);
+      color: var(--primary-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Screen 2: Verification Styles */
+    .auth-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--slate-700);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--slate-300);
+      border-radius: var(--radius-md);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .input-hint {
+      font-size: 0.75rem;
+      color: var(--slate-500);
+      margin-top: 4px;
+    }
+
+    .otp-display-badge {
+      background: var(--primary-50);
+      border: 1px dashed var(--primary-light);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: var(--primary-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .otp-code {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.2rem;
+      letter-spacing: 0.2em;
+      color: var(--primary-light);
+    }
+
+    .attempts-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--warning-bg);
+      border: 1px solid #fde68a;
+      color: var(--warning);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Screen 3: Account Summary Dashboard */
+    .hardship-banner {
+      background: linear-gradient(90deg, #f0fdfa 0%, #e0f2fe 100%);
+      border: 1px solid #99f6e4;
+      border-left: 4px solid var(--teal-600);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .hardship-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hardship-icon {
+      width: 36px;
+      height: 36px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--teal-600);
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hardship-text h4 {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--slate-900);
+    }
+
+    .hardship-text p {
+      font-size: 0.82rem;
+      color: var(--slate-600);
+    }
+
+    .summary-cards-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .balance-card {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e293b 100%);
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-md);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-card::after {
+      content: "";
+      position: absolute;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
+    .balance-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .balance-amount {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+
+    .balance-meta {
+      display: flex;
+      gap: 20px;
+      font-size: 0.82rem;
+      opacity: 0.9;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 12px;
+    }
+
+    .breakdown-card {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 20px 24px;
+    }
+
+    .breakdown-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-800);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--slate-200);
+      color: var(--slate-600);
+    }
+
+    .breakdown-row:last-child {
+      border-bottom: none;
+      font-weight: 700;
+      color: var(--slate-900);
+      padding-top: 10px;
+    }
+
+    /* Screen 4: Triage & Intent Selector */
+    .intent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .intent-card {
+      background: #ffffff;
+      border: 1.5px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .intent-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .intent-card.recommended {
+      border-color: var(--primary-light);
+      background: linear-gradient(180deg, #ffffff 0%, var(--primary-50) 100%);
+    }
+
+    .intent-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: var(--primary-100);
+      color: var(--primary-light);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .intent-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 14px;
+      background: var(--slate-100);
+      color: var(--primary);
+    }
+
+    .intent-card.recommended .intent-icon {
+      background: var(--primary-100);
+      color: var(--primary-light);
+    }
+
+    .intent-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 6px;
+    }
+
+    .intent-desc {
+      font-size: 0.82rem;
+      color: var(--slate-600);
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .intent-action-text {
+      margin-top: auto;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hardship-option-card {
+      grid-column: span 2;
+      background: #fafafa;
+      border: 1px dashed var(--slate-300);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .hardship-option-card:hover {
+      background: var(--teal-50);
+      border-color: var(--teal-600);
+    }
+
+    /* Screen 5A: Promise-to-Pay Flow */
+    .p2p-container {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    .rule-callout {
+      background: var(--primary-50);
+      border: 1px solid var(--primary-100);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      font-size: 0.84rem;
+      color: var(--primary-dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .date-picker-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .radio-pill-group {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .radio-pill-item {
+      position: relative;
+    }
+
+    .radio-pill-item input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .radio-pill-label {
+      display: block;
+      padding: 10px 8px;
+      text-align: center;
+      background: white;
+      border: 1.5px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--slate-700);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .radio-pill-item input:checked + .radio-pill-label {
+      border-color: var(--primary-light);
+      background: var(--primary-50);
+      color: var(--primary-light);
+    }
+
+    /* Screen 5B: Payment Plan Flow */
+    .plan-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 20px 0 28px;
+    }
+
+    .plan-card {
+      background: #ffffff;
+      border: 2px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .plan-card:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .plan-card.selected {
+      border-color: var(--primary-light);
+      background: var(--primary-50);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
+    .plan-months {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--slate-900);
+      margin-bottom: 6px;
+    }
+
+    .plan-amount {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .plan-frequency {
+      font-size: 0.72rem;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .plan-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--slate-100);
+      color: var(--slate-600);
+    }
+
+    .plan-card.selected .plan-tag {
+      background: var(--primary-100);
+      color: var(--primary-light);
+    }
+
+    /* Screen 6: Confirmation */
+    .confirmation-card {
+      max-width: 650px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .success-checkmark-circle {
+      width: 72px;
+      height: 72px;
+      background: var(--success-bg);
+      border: 2px solid var(--success);
+      color: var(--success);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 20px;
+      box-shadow: 0 10px 20px rgba(21, 128, 61, 0.15);
+    }
+
+    .receipt-summary-box {
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: left;
+      margin: 24px 0;
+    }
+
+    .receipt-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed var(--slate-200);
+      font-size: 0.88rem;
+    }
+
+    .receipt-row:last-child {
+      border-bottom: none;
+    }
+
+    .receipt-label {
+      color: var(--slate-500);
+    }
+
+    .receipt-value {
+      font-weight: 600;
+      color: var(--slate-900);
+    }
+
+    /* Screen 7: Routed to Representative */
+    .routed-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .alert-banner-routed {
+      background: var(--slate-50);
+      border-left: 5px solid var(--primary-light);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+    }
+
+    .alert-banner-routed.vulnerability {
+      border-left-color: var(--teal-600);
+      background: var(--teal-50);
+    }
+
+    .alert-banner-routed.lockout {
+      border-left-color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .contact-channels-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin: 24px 0;
+    }
+
+    .contact-channel-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .contact-channel-card h4 {
+      font-size: 0.95rem;
+      color: var(--slate-800);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .charity-links-box {
+      background: #f8fafc;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-top: 20px;
+    }
+
+    .charity-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .charity-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    /* Specialist View Modal (KAN-15) */
+    .specialist-preview-toggle {
+      background: #0f172a;
+      color: #38bdf8;
+      border: 1px dashed #0284c7;
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .specialist-card-drawer {
+      display: none;
+      background: #1e293b;
+      color: #f1f5f9;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 12px;
+      font-size: 0.84rem;
+    }
+
+    .specialist-card-drawer.open {
+      display: block;
+    }
+
+    /* Global Modal: Inactivity Timeout */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      max-width: 480px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: var(--shadow-xl);
+      text-align: center;
+      animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .timeout-clock {
+      font-family: var(--font-mono);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--danger);
+      margin: 16px 0;
+    }
+
+    /* Utilities */
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .text-muted { color: var(--slate-500); }
+    .text-bold { font-weight: 600; }
+    .text-sm { font-size: 0.82rem; }
+
+    @media (max-width: 768px) {
+      .landing-hero, .auth-grid, .summary-cards-grid, .p2p-container, .contact-channels-grid {
+        grid-template-columns: 1fr;
+      }
+      .plan-cards-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .intent-grid {
+        grid-template-columns: 1fr;
+      }
+      .hardship-option-card {
+        grid-column: span 1;
+      }
+      .portal-screen {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top BA / Tester Control Toolbar -->
+  <div class="ba-toolbar">
+    <div class="ba-toolbar-left">
+      <span class="ba-badge">PROTOTYPE MODE</span>
+      <span>Smart-Recovery Portal (Phase 1)</span>
+      <span style="color: #475569;">|</span>
+      <span style="font-size: 0.75rem; color: #cbd5e1;">Target: 38% Straightforward Accounts (£2.40M ROI)</span>
+    </div>
+
+    <div class="ba-toolbar-nav">
+      <span style="font-size: 0.72rem; color: #64748b; margin-right: 4px;">Jump to Screen:</span>
+      <button class="screen-pill active" onclick="switchScreen('scr-1')">1. Landing</button>
+      <button class="screen-pill" onclick="switchScreen('scr-2')">2. Auth (OTP)</button>
+      <button class="screen-pill" onclick="switchScreen('scr-3')">3. Summary</button>
+      <button class="screen-pill" onclick="switchScreen('scr-4')">4. Triage</button>
+      <button class="screen-pill" onclick="switchScreen('scr-5a')">5A. Promise</button>
+      <button class="screen-pill" onclick="switchScreen('scr-5b')">5B. Plan</button>
+      <button class="screen-pill" onclick="switchScreen('scr-pay')">5C. Pay Full</button>
+      <button class="screen-pill" onclick="switchScreen('scr-6')">6. Confirmation</button>
+      <button class="screen-pill" onclick="switchScreen('scr-7')">7. Routed</button>
+      <button class="ba-toggle-btn" onclick="triggerInactivityModal()">
+        ⏱️ Trigger Timeout (KAN-14)
+      </button>
+      <button class="ba-toggle-btn" onclick="toggleTraceabilityBanner()">
+        📋 Toggle BA Spec
+      </button>
+    </div>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- BA Traceability & Requirements Context Banner -->
+    <div id="baTraceabilityBanner" class="ba-traceability-card">
+      <div class="ba-traceability-header">
+        <span id="baScreenTitle">Screen 1: Landing / Entry Page (SCR-01)</span>
+        <span style="font-size: 0.75rem; color: #94a3b8;">FCA Consumer Duty Compliant • UK GDPR Safeguarded</span>
+      </div>
+      <div id="baScreenDescription" style="color: #cbd5e1; font-size: 0.8rem; line-height: 1.4;">
+        Entry screen welcoming customers arriving via SMS, email, or direct URL. Sets brand trust without displaying any customer financial details prior to authentication.
+      </div>
+      <div class="ba-traceability-tags">
+        <span id="baTagJira" class="ba-tag ba-tag-jira">Jira: KAN-4, KAN-9</span>
+        <span id="baTagBpmn" class="ba-tag ba-tag-bpmn">BPMN: Access Portal (Customer Lane)</span>
+        <span id="baTagRule" class="ba-tag ba-tag-rule">Rule: Zero account data visible before authentication</span>
+        <span class="ba-tag" style="color: #a78bfa; border-color: #6d28d9;">Audit: Portal Metadata init logged</span>
+      </div>
+    </div>
+
+    <!-- Main Portal Frame -->
+    <main class="portal-frame">
+
+      <!-- Universal Portal Header -->
+      <header class="portal-header">
+        <div class="brand-group">
+          <div class="brand-logo">SR</div>
+          <div class="brand-text">
+            <h1>Smart-Recovery</h1>
+            <span>Secure Customer Financial Resolution Portal</span>
+          </div>
+        </div>
+
+        <div class="portal-header-right">
+          <div class="trust-badge-pill">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>256-Bit SSL Encrypted</span>
+          </div>
+
+          <div id="authHeaderStatus" class="session-indicator" style="display: none;">
+            <div class="pulse-dot"></div>
+            <span>Ref: <strong id="headerAccountRef">SR-89421</strong></span>
+            <button class="btn btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.72rem; margin-left: 6px;" onclick="signOutCustomer()">Sign Out</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 1: LANDING / ENTRY PAGE (SCR-01)    -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-01]
+        • Related Story IDs: KAN-4, KAN-9
+        • Key Data Shown: Service branding, trust & regulatory credentials (FCA, CCA, UK GDPR), 3-step value overview. (Zero customer financial data displayed).
+        • Validation / Business Rule: Unauthenticated landing state; strictly zero PII or debt data exposed prior to 2FA verification (UK GDPR Art. 32 & CONC).
+        • Next Steps in Journey: Click "Manage My Account" -> moves to SCR-02 (Identity Verification). Click "Prefer to Speak to Someone?" -> routes to SCR-09 (Support).
+      -->
+      <section id="scr-1" class="portal-screen active">
+        <div class="landing-hero">
+          <div class="hero-content">
+            <h2>Take control of your account, <span>at your pace.</span></h2>
+            <p>Welcome to your secure self-service portal. Clear your overdue balance, set up a manageable monthly installment plan, or schedule a payment date that aligns with your payday.</p>
+
+            <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+              <button class="btn btn-primary btn-lg" onclick="switchScreen('scr-2')">
+                Manage My Account
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+              <button class="btn btn-secondary btn-lg" onclick="routeToException('general-help')">
+                Prefer to Speak to Someone?
+              </button>
+            </div>
+
+            <div style="margin-top: 24px; font-size: 0.8rem; color: var(--slate-500); display: flex; gap: 20px;">
+              <span>✓ No wait on the phone</span>
+              <span>✓ Instant confirmation</span>
+              <span>✓ Pauses automated calls</span>
+            </div>
+          </div>
+
+          <div class="landing-card-preview">
+            <h3 style="font-size: 1rem; color: var(--slate-800); margin-bottom: 12px; font-weight: 700;">Simple, 3-Step Resolution</h3>
+            <ul class="feature-list">
+              <li class="feature-item">
+                <div class="feature-icon">1</div>
+                <div>
+                  <strong style="color: var(--slate-900);">Quick Identity Check</strong>
+                  <p style="font-size: 0.78rem; color: var(--slate-500);">Simple OTP sent to your registered phone or email</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon">2</div>
+                <div>
+                  <strong style="color: var(--slate-900);">Transparent Overview</strong>
+                  <p style="font-size: 0.78rem; color: var(--slate-500);">View exact cleared balance and itemized breakdown</p>
+                </div>
+              </li>
+              <li class="feature-item">
+                <div class="feature-icon">3</div>
+                <div>
+                  <strong style="color: var(--slate-900);">Choose Your Plan</strong>
+                  <p style="font-size: 0.78rem; color: var(--slate-500);">Pay later on payday, or spread 3–12 months from £15/mo</p>
+                </div>
+              </li>
+            </ul>
+
+            <div style="background: white; border-radius: var(--radius-md); padding: 12px 14px; font-size: 0.78rem; color: var(--slate-600); border: 1px solid var(--slate-200);">
+              💡 <strong>Facing financial or health distress?</strong> We provide immediate 30-day breathing space pauses and specialist assistance.
+            </div>
+          </div>
+        </div>
+
+        <footer class="reg-footer-banner">
+          <div class="fca-badges">
+            <span class="fca-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Regulated by the Financial Conduct Authority (FCA)
+            </span>
+            <span>•</span>
+            <span>Consumer Credit Act (CCA) 1974</span>
+          </div>
+          <div>Strict UK GDPR & Data Protection Act 2018 Standards</div>
+        </footer>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 2: IDENTITY VERIFICATION (SCR-02)   -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-02]
+        • Related Story IDs: KAN-4 (Highest / Must-Have), KAN-9
+        • Key Data Shown: Masked reference number (SR-89421), DOB input, Postcode input, masked OTP recipient (07*** ***412), mock passcode hint, remaining attempts counter (3).
+        • Validation / Business Rule: 6-digit OTP verification; rate limited to exactly 3 attempts. 3 failed attempts triggers immediate AUTH_LOCKOUT flag and routes to agent reset.
+        • Next Steps in Journey: Successful OTP -> SCR-03 (Account Summary). 3 Failed attempts -> routes to SCR-09 (Account Security Lockout handoff).
+      -->
+      <section id="scr-2" class="portal-screen">
+        <div class="screen-header-block">
+          <div class="flex-between">
+            <div>
+              <h2 class="screen-title">Verify Your Identity</h2>
+              <p class="screen-subtitle">To protect your personal financial information, please confirm your details and enter the security code sent to your registered mobile phone.</p>
+            </div>
+            <div id="attemptBadgeContainer">
+              <span class="attempts-counter" id="attemptsCounter">
+                🛡️ 3 Verification Attempts Remaining
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="auth-grid">
+          <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 24px;">
+            <div class="form-group">
+              <label class="form-label" for="accountRefInput">Account / Reference Number</label>
+              <input type="text" id="accountRefInput" class="form-input" value="SR-89421" readonly style="background: #e2e8f0; font-family: var(--font-mono); font-weight: 600;">
+              <p class="input-hint">Prefilled from your secure notification link (SMS/Email)</p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="dobInput">Date of Birth</label>
+              <input type="date" id="dobInput" class="form-input" value="1984-06-15">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="postcodeInput">Postal Code</label>
+              <input type="text" id="postcodeInput" class="form-input" value="M1 4BT" placeholder="e.g. SW1A 1AA">
+            </div>
+
+            <div class="otp-display-badge">
+              <div>
+                <strong>Security Passcode Sent:</strong><br>
+                <span style="font-size: 0.76rem; color: var(--slate-600);">Sent via SMS to 07*** ***412 (Valid 5 mins)</span>
+              </div>
+              <div class="otp-code">482910</div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="otpInput">Enter 6-Digit One-Time Passcode (OTP)</label>
+              <input type="text" id="otpInput" class="form-input" placeholder="Enter 482910 to succeed" maxlength="6" style="font-family: var(--font-mono); font-size: 1.2rem; letter-spacing: 0.15em;">
+              <p id="authErrorMessage" style="color: var(--danger); font-size: 0.8rem; margin-top: 6px; display: none;">
+                ⚠️ The details provided do not match our records. Please check and retry.
+              </p>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+              <button class="btn btn-primary" style="flex: 1;" onclick="handleOtpVerification()">
+                Verify & View Account
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="simulateFailedAttempt()" title="Test failed verification to see the 3-attempt lockout safeguard">
+                Simulate Incorrect OTP
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: var(--primary-50); border: 1px solid var(--primary-100); border-radius: var(--radius-lg); padding: 20px;">
+              <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px;">
+                🔒 Privacy & Security Safeguard (KAN-4)
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--slate-700); line-height: 1.5; margin-bottom: 12px;">
+                In compliance with UK GDPR Article 32 and Consumer Credit Sourcebook (CONC) guidelines, no account balance or delinquency data is exposed before identity verification.
+              </p>
+              <ul style="font-size: 0.78rem; color: var(--slate-600); padding-left: 18px; display: flex; flex-direction: column; gap: 4px;">
+                <li>Rate limited to 3 verification attempts</li>
+                <li>3 failures trigger an immediate <code>AUTH_LOCKOUT</code></li>
+                <li>Locks session & transfers securely to the collections team</li>
+              </ul>
+            </div>
+
+            <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 20px;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--slate-800); margin-bottom: 6px;">Need Assistance?</h4>
+              <p style="font-size: 0.8rem; color: var(--slate-600); margin-bottom: 12px;">
+                No longer have access to this mobile number, or experiencing difficulties signing in?
+              </p>
+              <button class="btn btn-secondary btn-sm" onclick="routeToException('auth-help')">
+                Request Sign-In Assistance
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 3: ACCOUNT SUMMARY DASHBOARD (SCR-03)-->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-03]
+        • Related Story IDs: KAN-5 (High), KAN-11, KAN-16
+        • Key Data Shown: Customer name (Alex Taylor), total overdue arrears (£485.50), delinquency status (34 DPD), pre-default stage, itemized charge breakdown, recent communications history.
+        • Validation / Business Rule: Only accessible post-authentication. Targets 12.49% balance enquiry deflection. Includes prominent, immediate vulnerability/hardship escape route.
+        • Next Steps in Journey: Click "Choose Resolution Options" -> SCR-04 (Action Triage). Click "Get Support & Pause" -> SCR-09 (Vulnerability 30-Day Breathing Space). Click "I Disagree" -> SCR-09 (Dispute Hold).
+      -->
+      <section id="scr-3" class="portal-screen">
+        <!-- Vulnerability / Hardship Escape Banner (KAN-11) -->
+        <div class="hardship-banner">
+          <div class="hardship-banner-content">
+            <div class="hardship-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </div>
+            <div class="hardship-text">
+              <h4>Experiencing Financial Difficulty, Illness, or Bereavement?</h4>
+              <p>We are here to support you. Let us know to immediately freeze automated collections for 30 days and connect with specialist support.</p>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" style="background: white; color: var(--teal-600); border-color: var(--teal-600); font-weight: 700;" onclick="routeToException('hardship')">
+            Get Support & Pause
+          </button>
+        </div>
+
+        <div class="screen-header-block">
+          <h2 class="screen-title">Account Overview</h2>
+          <p class="screen-subtitle">Hello <strong>Alex Taylor</strong>, here is your current account status and transparent cleared balance breakdown.</p>
+        </div>
+
+        <div class="summary-cards-grid">
+          <div class="balance-card">
+            <div class="balance-label">Total Overdue Arrears</div>
+            <div class="balance-amount">£485.50</div>
+
+            <div class="balance-meta">
+              <div>
+                <span style="opacity: 0.7; font-size: 0.72rem; display: block;">ACCOUNT STATUS</span>
+                <strong>Delinquent (34 Days Past Due)</strong>
+              </div>
+              <div>
+                <span style="opacity: 0.7; font-size: 0.72rem; display: block;">DEFAULT NOTICE STATUS</span>
+                <strong>Pre-Default Stage</strong>
+              </div>
+              <div>
+                <span style="opacity: 0.7; font-size: 0.72rem; display: block;">ORIGINAL DUE DATE</span>
+                <strong>04 Sept 2026</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="breakdown-card">
+            <h3>
+              <span>Itemized Charge Breakdown</span>
+              <span style="font-size: 0.72rem; font-weight: 500; color: var(--slate-500);">Ref: SR-89421</span>
+            </h3>
+            <div class="breakdown-row">
+              <span>Overdue Monthly Installment</span>
+              <span>£420.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Statutory Late Administration Fee</span>
+              <span>£35.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Accrued Contractual Interest</span>
+              <span>£30.50</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Recent Payments Received</span>
+              <span style="color: var(--success);">-£0.00</span>
+            </div>
+            <div class="breakdown-row">
+              <span>Total Balance Due to Clear</span>
+              <span>£485.50</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Interaction History Snapshot (KAN-5 / KAN-8) -->
+        <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 16px 20px; margin-bottom: 24px;">
+          <h4 style="font-size: 0.88rem; font-weight: 700; color: var(--slate-800); margin-bottom: 8px; display: flex; justify-content: space-between;">
+            <span>Recent Communications & Statements</span>
+            <span style="font-size: 0.75rem; color: var(--primary-light); cursor: pointer;">Download PDF Statement 📥</span>
+          </h4>
+          <div style="display: flex; gap: 24px; font-size: 0.78rem; color: var(--slate-600);">
+            <span>📄 Notice of Arrears sent: <strong>12 Sept 2026</strong></span>
+            <span>📱 SMS Payment Reminder: <strong>26 Sept 2026</strong></span>
+            <span>🔒 Identity Verified via OTP: <strong>Just Now</strong></span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--slate-200); padding-top: 20px;">
+          <button class="btn btn-secondary" onclick="routeToException('dispute')">
+            I Disagree with this Balance
+          </button>
+          <button class="btn btn-primary btn-lg" onclick="switchScreen('scr-4')">
+            Choose Resolution Options
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 4: CHOOSE NEXT ACTION (SCR-04)      -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-04]
+        • Related Story IDs: KAN-5, KAN-7 (Rules-Based Triage), KAN-18
+        • Key Data Shown: 5 distinct resolution pathways: Pay Balance in Full (£485.50), Promise to Pay (1–30 days), Payment Plan (3–12 months), Formal Dispute, Financial Hardship.
+        • Validation / Business Rule: Rules-based triage; straightforward accounts (38%) directed to automated self-service; complex disputes & vulnerable accounts immediately deflected to specialist queues.
+        • Next Steps in Journey: Select "Pay in Full" -> SCR-04b (Screen 5C Card Payment). Select "Promise to Pay" -> SCR-05 (Screen 5A). Select "Payment Plan" -> SCR-06 (Screen 5B). Select Dispute/Hardship -> SCR-09 (Specialist Handoff).
+      -->
+      <section id="scr-4" class="portal-screen">
+        <div class="screen-header-block">
+          <h2 class="screen-title">How Would You Like to Resolve This?</h2>
+          <p class="screen-subtitle">Select the option that best fits your current financial situation. All online resolutions immediately halt automated collections calls and letters.</p>
+        </div>
+
+        <div class="intent-grid">
+          <!-- Option 1: Pay in Full -->
+          <div class="intent-card" onclick="selectIntentPathway('pay-now')">
+            <div class="intent-icon">💳</div>
+            <div class="intent-title">Pay Balance in Full Today</div>
+            <div class="intent-desc">Make a single secure debit card payment of £485.50 to bring your account completely up to date right now.</div>
+            <div class="intent-action-text">Pay £485.50 Now →</div>
+          </div>
+
+          <!-- Option 2: Promise to Pay (OP-03 / KAN-20) -->
+          <div class="intent-card recommended" onclick="selectIntentPathway('promise')">
+            <span class="intent-badge">Popular</span>
+            <div class="intent-icon">📅</div>
+            <div class="intent-title">Pay Later (Promise to Pay)</div>
+            <div class="intent-desc">Waiting for payday? Commit to a single future date (up to 30 days) to clear your balance in full without intrusive questions.</div>
+            <div class="intent-action-text">Select Settlement Date (1–30 Days) →</div>
+          </div>
+
+          <!-- Option 3: Installment Plan (OP-04 / KAN-6) -->
+          <div class="intent-card recommended" onclick="selectIntentPathway('plan')">
+            <span class="intent-badge">Manageable</span>
+            <div class="intent-icon">📊</div>
+            <div class="intent-title">Spread Cost (Payment Plan)</div>
+            <div class="intent-desc">Divide your £485.50 balance into predictable monthly installments over 3, 6, 9, or 12 months (starting from ~£40.46/mo).</div>
+            <div class="intent-action-text">Explore 3–12 Month Plans →</div>
+          </div>
+
+          <!-- Option 4: Formal Dispute (KAN-7) -->
+          <div class="intent-card" onclick="selectIntentPathway('dispute')">
+            <div class="intent-icon">⚖️</div>
+            <div class="intent-title">Dispute this Balance</div>
+            <div class="intent-desc">If you believe these charges are incorrect, suspect fraud, or have already settled, lodge an official investigation.</div>
+            <div class="intent-action-text">Lodge Formal Dispute (14-Day Hold) →</div>
+          </div>
+
+          <!-- Option 5: Hardship / Cannot Afford (KAN-11) -->
+          <div class="hardship-option-card" onclick="selectIntentPathway('hardship')">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <span style="font-size: 1.5rem;">🤝</span>
+              <div>
+                <strong style="font-size: 0.95rem; color: var(--slate-900);">I cannot afford any of these options</strong>
+                <p style="font-size: 0.8rem; color: var(--slate-600);">If you are in severe financial distress or need Breathing Space, speak with our specialist vulnerable customer team.</p>
+              </div>
+            </div>
+            <span class="btn btn-outline btn-sm" style="white-space: nowrap;">Request Support</span>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-start;">
+          <button class="btn btn-secondary" onclick="switchScreen('scr-3')">
+            ← Back to Account Summary
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 5A: PROMISE-TO-PAY SETUP (SCR-05)   -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-05 (Screen 5A)]
+        • Related Story IDs: KAN-20 (OP-03, High), KAN-17
+        • Key Data Shown: Overdue balance (£485.50), interactive date picker, quick-select pills (+7, +14, +21, +28 days), fulfillment authorization method, terms of promise callout.
+        • Validation / Business Rule: Hard policy cap strictly enforcing settlement dates within 1 to 30 calendar days from today. Requires agreement to 48h prior reminder & enforcement restart terms.
+        • Next Steps in Journey: Click "Confirm Payment Promise" -> SCR-08 (Screen 6 Confirmation & Receipt). Click "Back" -> SCR-04. Click "View Monthly Installments" -> SCR-06 (Screen 5B).
+      -->
+      <section id="scr-5a" class="portal-screen">
+        <div class="screen-header-block">
+          <h2 class="screen-title">Schedule a Future Payment Date</h2>
+          <p class="screen-subtitle">Commit to a single payment date to clear your overdue balance of £485.50 in full. Collections activities will be held until this date.</p>
+        </div>
+
+        <div class="p2p-container">
+          <div>
+            <div class="rule-callout">
+              <span style="font-size: 1.2rem;">⏱️</span>
+              <div>
+                <strong>30-Day Policy Rule (OP-03 / KAN-20)</strong><br>
+                Under our collections policy, settlement promises can be scheduled up to a maximum of 30 calendar days from today.
+              </div>
+            </div>
+
+            <div class="date-picker-box">
+              <label class="form-label" for="p2pDatePicker">Select Your Promised Settlement Date</label>
+              <input type="date" id="p2pDatePicker" class="form-input" style="font-size: 1.05rem; font-weight: 600;" onchange="validatePromiseDate()">
+              <p id="p2pValidationMsg" class="input-hint" style="color: var(--teal-600); font-weight: 600; margin-top: 6px;">
+                ✓ Select any date between today and 30 days ahead
+              </p>
+
+              <div style="margin-top: 14px;">
+                <label class="form-label" style="font-size: 0.8rem;">Quick Select Options:</label>
+                <div class="radio-pill-group">
+                  <div class="radio-pill-item">
+                    <input type="radio" name="p2pQuick" id="qp7" onclick="setQuickP2PDate(7)">
+                    <label for="qp7" class="radio-pill-label">In 7 Days</label>
+                  </div>
+                  <div class="radio-pill-item">
+                    <input type="radio" name="p2pQuick" id="qp14" onclick="setQuickP2PDate(14)">
+                    <label for="qp14" class="radio-pill-label">In 14 Days</label>
+                  </div>
+                  <div class="radio-pill-item">
+                    <input type="radio" name="p2pQuick" id="qp28" checked onclick="setQuickP2PDate(28)">
+                    <label for="qp28" class="radio-pill-label">Next Payday (28d)</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Payment Fulfillment Method</label>
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem; cursor: pointer;">
+                  <input type="radio" name="p2pMethod" value="auto-debit" checked>
+                  <span>Authorize automatic card payment on the promised date</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; font-size: 0.88rem; cursor: pointer;">
+                  <input type="radio" name="p2pMethod" value="reminder-link">
+                  <span>Send me an SMS/Email secure payment link 48 hours prior</span>
+                </label>
+              </div>
+            </div>
+
+            <div style="background: var(--slate-100); border-radius: var(--radius-md); padding: 14px; font-size: 0.8rem; color: var(--slate-600); margin-top: 18px;">
+              <strong>Terms of Promise:</strong> If payment is not received by the agreed date, automated collections activities will resume. You can cancel or amend this agreement up to 48 hours before the due date.
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+              <button class="btn btn-secondary" onclick="switchScreen('scr-4')">← Back to Options</button>
+              <button class="btn btn-primary btn-lg" onclick="confirmPromiseToPay()">
+                Confirm Payment Promise
+              </button>
+            </div>
+          </div>
+
+          <!-- Side Context & Assistance -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 20px;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--slate-800); margin-bottom: 8px;">Settlement Summary</h4>
+              <div class="receipt-row">
+                <span class="receipt-label">Amount Due:</span>
+                <span class="receipt-value">£485.50</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Promise Date:</span>
+                <span class="receipt-value" id="p2pSummaryDate">05 Nov 2026</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">48h Reminder:</span>
+                <span class="receipt-value" id="p2pReminderDate">03 Nov 2026</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Enforcement Hold:</span>
+                <span class="receipt-value" style="color: var(--success);">ACTIVE</span>
+              </div>
+            </div>
+
+            <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 20px; font-size: 0.82rem; color: var(--slate-600);">
+              <strong style="color: var(--slate-800); display: block; margin-bottom: 4px;">Need more time than 30 days?</strong>
+              A payment promise is meant for full settlement on your next payday. If you need longer, consider an installment plan instead.
+              <div style="margin-top: 12px;">
+                <button class="btn btn-secondary btn-sm" onclick="switchScreen('scr-5b')">View Monthly Installments →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 5B: PAYMENT PLAN FLOW (SCR-06/07)   -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-06/07 (Screen 5B)]
+        • Related Story IDs: KAN-6 (OP-04, High), KAN-17
+        • Key Data Shown: Arrears (£485.50), eligibility badge, tiered schedule cards (3, 6, 9, 12 months), monthly payment breakdown (£161.83 - £40.46/mo), first installment date, Direct Debit summary.
+        • Validation / Business Rule: Balance must be between £50 and £5,000; monthly repayment must meet or exceed £15.00/month policy minimum floor. Standard plans strictly capped at 12 months.
+        • Next Steps in Journey: Click "Authorize Mandate & Finalize Plan" -> SCR-08 (Screen 6 Confirmation). Click "Request Custom Terms / Specialist Review" -> SCR-09 (Screen 7 Specialist Handoff).
+      -->
+      <section id="scr-5b" class="portal-screen">
+        <div class="screen-header-block">
+          <div class="flex-between">
+            <div>
+              <h2 class="screen-title">Select an Installment Plan</h2>
+              <p class="screen-subtitle">Spread your £485.50 balance across manageable monthly installments with 0% additional interest during the plan term.</p>
+            </div>
+            <div style="text-align: right;">
+              <span class="ba-badge" style="background: var(--teal-50); color: var(--teal-600); border-color: var(--teal-600);">
+                Eligible (£50–£5,000 threshold met)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plan Selection Tier Cards -->
+        <div class="plan-cards-grid">
+          <!-- 3 Months -->
+          <div class="plan-card" onclick="selectPlanCard(3, 161.83, this)">
+            <div class="plan-months">3 Months</div>
+            <div class="plan-amount">£161.83</div>
+            <div class="plan-frequency">Per Month</div>
+            <span class="plan-tag">Fastest Clearance</span>
+          </div>
+
+          <!-- 6 Months -->
+          <div class="plan-card" onclick="selectPlanCard(6, 80.92, this)">
+            <div class="plan-months">6 Months</div>
+            <div class="plan-amount">£80.92</div>
+            <div class="plan-frequency">Per Month</div>
+            <span class="plan-tag">Balanced</span>
+          </div>
+
+          <!-- 9 Months -->
+          <div class="plan-card" onclick="selectPlanCard(9, 53.94, this)">
+            <div class="plan-months">9 Months</div>
+            <div class="plan-amount">£53.94</div>
+            <div class="plan-frequency">Per Month</div>
+            <span class="plan-tag">Affordable</span>
+          </div>
+
+          <!-- 12 Months -->
+          <div class="plan-card selected" onclick="selectPlanCard(12, 40.46, this)">
+            <div class="plan-months">12 Months</div>
+            <div class="plan-amount">£40.46</div>
+            <div class="plan-frequency">Per Month</div>
+            <span class="plan-tag">Lowest Monthly</span>
+          </div>
+        </div>
+
+        <!-- Selected Plan Configuration & Mandate Setup -->
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 32px; align-items: start;">
+          <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 24px;">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--slate-800); margin-bottom: 16px;">
+              Direct Debit Mandate Details
+            </h3>
+
+            <div class="form-group">
+              <label class="form-label" for="ddAccountName">Account Holder Name</label>
+              <input type="text" id="ddAccountName" class="form-input" value="Alex Taylor">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 14px;">
+              <div class="form-group">
+                <label class="form-label" for="ddSortCode">Sort Code</label>
+                <input type="text" id="ddSortCode" class="form-input" value="20-45-78" maxlength="8">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="ddAccountNum">Account Number</label>
+                <input type="text" id="ddAccountNum" class="form-input" value="83749201" maxlength="8">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="ddPaymentDay">Preferred Monthly Collection Day</label>
+              <select id="ddPaymentDay" class="form-input">
+                <option value="1st">1st of every month</option>
+                <option value="15th">15th of every month</option>
+                <option value="25th">25th of every month (Common Payday)</option>
+                <option value="Last">Last working day of the month</option>
+              </select>
+            </div>
+
+            <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 12px; font-size: 0.78rem; color: var(--slate-600); margin-top: 14px;">
+              🛡️ <strong>Direct Debit Guarantee:</strong> Protected by the UK Direct Debit Guarantee scheme. Advance notice sent before any payment collection.
+            </div>
+          </div>
+
+          <!-- Summary Column -->
+          <div style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="background: white; border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: 20px;">
+              <h4 style="font-size: 0.9rem; font-weight: 700; color: var(--slate-800); margin-bottom: 12px;">Plan Summary</h4>
+              <div class="receipt-row">
+                <span class="receipt-label">Total Balance:</span>
+                <span class="receipt-value">£485.50</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Term Length:</span>
+                <span class="receipt-value" id="summaryTermLength">12 Months</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Monthly Payment:</span>
+                <span class="receipt-value" id="summaryMonthlyAmount" style="color: var(--primary-light); font-size: 1.1rem;">£40.46</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">First Installment:</span>
+                <span class="receipt-value" id="summaryFirstPaymentDate">01 Nov 2026</span>
+              </div>
+              <div class="receipt-row">
+                <span class="receipt-label">Policy Minimum Floor:</span>
+                <span class="receipt-value" style="color: var(--success);">£15.00/mo (Met)</span>
+              </div>
+            </div>
+
+            <!-- Exception Trigger: Can't Afford Standard Options -->
+            <div style="background: var(--amber-50, #fffbeb); border: 1px solid #fde68a; border-radius: var(--radius-lg); padding: 16px; font-size: 0.8rem;">
+              <strong style="color: var(--warning); display: block; margin-bottom: 4px;">None of these amounts work?</strong>
+              If you require a plan exceeding 12 months, lower monthly amounts, or balance adjustments, our specialist team can help.
+              <div style="margin-top: 10px;">
+                <button class="btn btn-secondary btn-sm" onclick="routeToException('bespoke-plan')">
+                  Request Custom Terms / Specialist Review
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--slate-200); padding-top: 20px; margin-top: 28px;">
+          <button class="btn btn-secondary" onclick="switchScreen('scr-4')">← Back to Options</button>
+          <button class="btn btn-primary btn-lg" onclick="confirmPaymentPlan()">
+            Authorize Mandate & Finalize Plan
+          </button>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 5C: PAY IN FULL - CARD PAYMENT      -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-04b (Screen 5C)]
+        • Related Story IDs: KAN-5, KAN-8 (Dual-Store Audit)
+        • Key Data Shown: Total balance to settle (£485.50), cardholder name, card number, expiry (MM/YY), CVV, test mode prefill indicator and re-populate button.
+        • Validation / Business Rule: Card details must be validated and authorized prior to issuing confirmation receipt; rejects invalid card length, expired dates, or missing CVV.
+        • Next Steps in Journey: Successful payment submission -> SCR-08 (Screen 6 Confirmation & Receipt). Click "Back to Options" -> SCR-04.
+      -->
+      <section id="scr-pay" class="portal-screen">
+        <div class="screen-header-block">
+          <h2 class="screen-title">Make Your Payment</h2>
+          <p class="screen-subtitle">Enter your debit card details to pay your balance of £485.50 in full. Your confirmation will be sent once the payment is successful.</p>
+        </div>
+        <div class="confirmation-card" style="text-align: left; max-width: 540px; margin: 0 auto;">
+          <div style="background: var(--primary-50); border: 1px dashed var(--primary); border-radius: var(--radius-md); padding: 12px 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <div style="font-size: 0.82rem; color: var(--primary-dark);">
+              🧪 <strong>Test Mode Active:</strong> Prefilled with mock test card data.
+            </div>
+            <button class="btn btn-secondary btn-sm" type="button" onclick="fillTestCardDetails()" style="font-size: 0.75rem; padding: 4px 10px;">
+              Re-populate Test Data
+            </button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <label style="font-size: 0.85rem; font-weight: 600; color: var(--slate-700);">Name on card
+              <input id="payCardName" type="text" autocomplete="cc-name" value="Alex Taylor" class="form-input" style="width: 100%; margin-top: 4px;">
+            </label>
+            <label style="font-size: 0.85rem; font-weight: 600; color: var(--slate-700);">Card number
+              <input id="payCardNumber" type="text" inputmode="numeric" maxlength="19" value="4532 0150 8942 1092" placeholder="1234 5678 9012 3456" autocomplete="cc-number" class="form-input" style="width: 100%; margin-top: 4px; font-family: var(--font-mono);">
+            </label>
+            <div style="display: flex; gap: 12px;">
+              <label style="flex: 1; font-size: 0.85rem; font-weight: 600; color: var(--slate-700);">Expiry (MM/YY)
+                <input id="payCardExpiry" type="text" maxlength="5" value="08/28" placeholder="MM/YY" autocomplete="cc-exp" class="form-input" style="width: 100%; margin-top: 4px; font-family: var(--font-mono);">
+              </label>
+              <label style="flex: 1; font-size: 0.85rem; font-weight: 600; color: var(--slate-700);">CVV
+                <input id="payCardCvv" type="password" inputmode="numeric" maxlength="4" value="789" autocomplete="cc-csc" class="form-input" style="width: 100%; margin-top: 4px; font-family: var(--font-mono);">
+              </label>
+            </div>
+            <div id="payError" style="display: none; color: #b91c1c; font-size: 0.85rem; margin-top: 4px;"></div>
+          </div>
+          <div style="display: flex; justify-content: center; gap: 14px; margin-top: 24px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="switchScreen('scr-4')">← Back to Options</button>
+            <button class="btn btn-primary" onclick="submitFullPayment()">Pay £485.50 Now</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 6: CONFIRMATION & RECEIPT (SCR-08)  -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-08 (Screen 6)]
+        • Related Story IDs: KAN-8 (Dual-Store Audit Logging), KAN-12 (24h Nightly Sync), KAN-20, KAN-6
+        • Key Data Shown: Transaction Reference ID (TX-20261008-8942), active PAUSE_COLLECTIONS flag, agreement type, commitment amount, first payment due date, fulfillment method, dispatch targets (SMS/Email), next steps list.
+        • Validation / Business Rule: Instant confirmation generated upon mandate capture; automatically pauses collections activities; queues records for 24h nightly core database synchronization (KAN-12) and dual-store audit logging (KAN-8).
+        • Next Steps in Journey: Click "Download PDF Agreement Receipt" -> downloads local PDF. Click "Return to Account Dashboard" -> SCR-03. Click "Secure Sign Out" -> purges session and returns to SCR-01.
+      -->
+      <section id="scr-6" class="portal-screen">
+        <div class="confirmation-card">
+          <div class="success-checkmark-circle">✓</div>
+          <h2 class="screen-title" style="margin-bottom: 8px;">Agreement Confirmed</h2>
+          <p class="screen-subtitle" style="margin: 0 auto;">Your payment arrangement has been successfully registered. Automated collections activity has been paused.</p>
+
+          <div class="receipt-summary-box">
+            <div class="flex-between mb-4" style="border-bottom: 1px solid var(--slate-200); padding-bottom: 12px;">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--slate-500); display: block;">TRANSACTION REFERENCE</span>
+                <strong style="font-family: var(--font-mono); font-size: 1.1rem; color: var(--primary);" id="confirmRefId">TX-20261008-8942</strong>
+              </div>
+              <span class="ba-badge" style="background: var(--success-bg); color: var(--success); border-color: var(--success);">
+                PAUSE_COLLECTIONS_ACTIVE
+              </span>
+            </div>
+
+            <div class="receipt-row">
+              <span class="receipt-label">Agreement Type:</span>
+              <span class="receipt-value" id="confirmType">12-Month Structured Payment Plan</span>
+            </div>
+            <div class="receipt-row">
+              <span class="receipt-label">Commitment Amount:</span>
+              <span class="receipt-value" id="confirmAmount">£40.46 / month</span>
+            </div>
+            <div class="receipt-row">
+              <span class="receipt-label">First Payment Due:</span>
+              <span class="receipt-value" id="confirmDueDate">01 Nov 2026</span>
+            </div>
+            <div class="receipt-row">
+              <span class="receipt-label">Fulfillment Method:</span>
+              <span class="receipt-value" id="confirmMethod">Direct Debit Mandate (•••• 9201)</span>
+            </div>
+            <div class="receipt-row">
+              <span class="receipt-label">Confirmation Dispatched:</span>
+              <span class="receipt-value">SMS to 07*** ***412 &amp; Email to a***@domain.com</span>
+            </div>
+            <div class="receipt-row">
+              <span class="receipt-label">Core Database Sync (KAN-12):</span>
+              <span class="receipt-value" style="color: var(--teal-600);">Scheduled for 24h Nightly Batch Sync</span>
+            </div>
+          </div>
+
+          <div style="background: var(--slate-100); border-radius: var(--radius-md); padding: 14px; font-size: 0.82rem; color: var(--slate-600); margin-bottom: 24px; text-align: left;">
+            ℹ️ <strong>What happens next?</strong>
+            <ul style="padding-left: 20px; margin-top: 6px; display: flex; flex-direction: column; gap: 4px;">
+              <li>You will receive an automated payment reminder <strong>48 hours before</strong> each payment date.</li>
+              <li>Your legacy account status will reflect this active arrangement within 24 hours.</li>
+              <li>You can view or update this mandate anytime by logging into the portal.</li>
+            </ul>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" onclick="alert('Digital PDF Agreement Receipt generated and downloaded.')">
+              📥 Download PDF Agreement Receipt
+            </button>
+            <button class="btn btn-primary" onclick="switchScreen('scr-3')">
+              Return to Account Dashboard
+            </button>
+            <button class="btn btn-secondary" onclick="signOutCustomer()">
+              Secure Sign Out
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- SCREEN 7: ROUTED TO SPECIALIST (SCR-09)    -->
+      <!-- ========================================== -->
+      <!--
+        [SCREEN ANNOTATION: SCR-09 (Screen 7)]
+        • Related Story IDs: KAN-7 (Triage & Case Routing), KAN-11 (Vulnerability Freeze), KAN-14 (Session Timeout), KAN-15 (Specialist View)
+        • Key Data Shown: Case reference ID (e.g. VUL-94812 / DISP-38104 / SEC-00129 / TMO-55201 / BES-77319), dynamic statutory hold banner (30-day breathing space / 14-day dispute hold / 48-hour timeout hold), priority phone line (0800 458 9120), scheduled call-back request form, FCA free debt advice links (StepChange, National Debtline, Citizens Advice), staff case review context drawer (KAN-15).
+        • Validation / Business Rule: Frictionless handoff ensuring zero customer repetition (Consumer Duty Principle 12); immediate freeze of automated collections and communications; passes full session audit context to internal CRM queue.
+        • Next Steps in Journey: Customer submits call-back request -> receives scheduled confirmation. Customer calls priority line -> specialist answers with preloaded context. Click "Return to Portal Home" / "Close Session" -> returns to SCR-01.
+      -->
+      <section id="scr-7" class="portal-screen">
+        <div class="routed-wrapper">
+          <div class="screen-header-block text-center" style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 56px; height: 56px; background: var(--primary-50); color: var(--primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 12px;">
+              🤝
+            </div>
+            <h2 class="screen-title" id="routedHeading">We’re Connecting You to Our Specialist Team</h2>
+            <p class="screen-subtitle" style="margin: 0 auto;" id="routedSubtitle">
+              Based on your circumstances, our specialist customer assistance team will manage your account with dedicated care.
+            </p>
+          </div>
+
+          <!-- Dynamic Status Banner based on trigger reason -->
+          <div id="routedBanner" class="alert-banner-routed vulnerability">
+            <div class="flex-between">
+              <div>
+                <strong id="routedBannerTitle" style="font-size: 1.05rem; color: var(--slate-900); display: block;">
+                  30-Day Breathing Space Pause Activated
+                </strong>
+                <p id="routedBannerText" style="font-size: 0.85rem; color: var(--slate-700); margin-top: 4px;">
+                  Under our vulnerability and hardship policy, all automated collections, interest accrual, and contact attempts are immediately halted for 30 calendar days.
+                </p>
+              </div>
+              <div style="text-align: right; flex-shrink: 0;">
+                <span class="ba-badge" id="routedCaseRef">CASE: VUL-94812</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Channels -->
+          <div class="contact-channels-grid">
+            <div class="contact-channel-card">
+              <h4>
+                <span>📞</span>
+                <span>Priority Specialist Line</span>
+              </h4>
+              <p style="font-size: 1.2rem; font-weight: 800; color: var(--primary); margin: 6px 0;">
+                0800 458 9120
+              </p>
+              <p style="font-size: 0.78rem; color: var(--slate-500); line-height: 1.4;">
+                Free from UK landlines and mobiles.<br>
+                <strong>Opening Hours:</strong> Mon–Fri 8:00am–8:00pm, Sat 9:00am–4:00pm.
+              </p>
+              <div style="margin-top: 14px;">
+                <span style="font-size: 0.74rem; background: var(--slate-100); padding: 4px 8px; border-radius: 4px; color: var(--slate-700);">
+                  Quote your reference: <strong>SR-89421</strong>
+                </span>
+              </div>
+            </div>
+
+            <div class="contact-channel-card">
+              <h4>
+                <span>📅</span>
+                <span>Request a Specialist Call Back</span>
+              </h4>
+              <p style="font-size: 0.82rem; color: var(--slate-600); margin-bottom: 12px;">
+                Prefer not to wait? Choose a convenient day and time window, and our collections team will contact you.
+              </p>
+              <div id="callbackFormContainer">
+                <div class="form-group" style="margin-bottom: 8px;">
+                  <label class="form-label" for="callbackPhone" style="font-size: 0.78rem; margin-bottom: 3px;">Contact Telephone Number</label>
+                  <input type="tel" id="callbackPhone" class="form-input" placeholder="Your Phone Number" value="07700 900412" style="font-size: 0.85rem; padding: 7px 10px;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="callbackDay" style="font-size: 0.78rem; margin-bottom: 3px;">Preferred Day</label>
+                    <select id="callbackDay" class="form-input" style="font-size: 0.82rem; padding: 7px 8px;">
+                      <option value="Today">Today</option>
+                      <option value="Tomorrow" selected>Tomorrow</option>
+                      <option value="In 2 Days">In 2 Days</option>
+                      <option value="Saturday">Saturday (9am–4pm)</option>
+                    </select>
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="callbackTimeSlot" style="font-size: 0.78rem; margin-bottom: 3px;">Time Window</label>
+                    <select id="callbackTimeSlot" class="form-input" style="font-size: 0.82rem; padding: 7px 8px;">
+                      <option value="Morning (08:30 - 12:00)">Morning (08:30–12:00)</option>
+                      <option value="Early Afternoon (12:00 - 15:00)" selected>Afternoon (12:00–15:00)</option>
+                      <option value="Late Afternoon (15:00 - 17:30)">Late Aft (15:00–17:30)</option>
+                      <option value="Evening (17:30 - 20:00)">Evening (17:30–20:00)</option>
+                    </select>
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="submitCallbackRequest()">
+                  Confirm Call Back Request
+                </button>
+              </div>
+              <div id="callbackSuccessNotice" style="display: none; background: var(--success-bg); border: 1px solid var(--success); border-radius: var(--radius-md); padding: 12px; margin-top: 6px;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: var(--success); margin-bottom: 4px;">
+                  ✓ Call Back Scheduled
+                </div>
+                <div id="callbackSuccessDetails" style="font-size: 0.76rem; color: var(--slate-700); line-height: 1.4;">
+                  A specialist will call you on <strong>07700 900412</strong>.
+                </div>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 8px; font-size: 0.72rem; padding: 2px 8px;" onclick="resetCallbackForm()">
+                  Change Time Slot
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Free Independent Debt Advice (FCA Requirement KAN-11) -->
+          <div class="charity-links-box" id="charityBox">
+            <div class="flex-between">
+              <strong style="font-size: 0.88rem; color: var(--slate-800);">Free Independent Debt &amp; Financial Advice</strong>
+              <span style="font-size: 0.75rem; color: var(--slate-500);">FCA Consumer Duty Resource</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--slate-600); margin-top: 4px;">
+              If you are worried about debt across multiple lenders, free confidential advice is available from independent organizations:
+            </p>
+            <div class="charity-grid">
+              <div class="charity-card">
+                <strong>StepChange</strong><br>
+                <span style="color: var(--slate-500);">0800 138 1111</span><br>
+                <a href="#" style="color: var(--primary-light); font-size: 0.75rem;" onclick="return false;">stepchange.org</a>
+              </div>
+              <div class="charity-card">
+                <strong>National Debtline</strong><br>
+                <span style="color: var(--slate-500);">0808 808 4000</span><br>
+                <a href="#" style="color: var(--primary-light); font-size: 0.75rem;" onclick="return false;">nationaldebtline.org</a>
+              </div>
+              <div class="charity-card">
+                <strong>Citizens Advice</strong><br>
+                <span style="color: var(--slate-500);">0800 144 8848</span><br>
+                <a href="#" style="color: var(--primary-light); font-size: 0.75rem;" onclick="return false;">citizensadvice.org.uk</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Specialist Case Review Screen Toggle (KAN-15 Feature) -->
+          <div class="specialist-preview-toggle" onclick="toggleSpecialistDrawer()">
+            <span>🔍 <strong>Staff View (KAN-15):</strong> Click to inspect Specialist Triage Screen Context</span>
+            <span id="drawerToggleIcon">▼</span>
+          </div>
+
+          <div id="specialistDrawer" class="specialist-card-drawer">
+            <div class="flex-between" style="border-bottom: 1px solid #334155; padding-bottom: 8px; margin-bottom: 10px;">
+              <strong style="color: #38bdf8;">Specialist Case Review Screen (KAN-15 Internal View)</strong>
+              <span class="ba-badge">Queue: Collections Team - Vulnerable &amp; Complex Cases</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; font-size: 0.78rem;">
+              <div>
+                <span style="color: #94a3b8; display: block;">Customer Name:</span>
+                <strong>Alex Taylor</strong>
+              </div>
+              <div>
+                <span style="color: #94a3b8; display: block;">Account Reference:</span>
+                <strong>SR-89421</strong>
+              </div>
+              <div>
+                <span style="color: #94a3b8; display: block;">Balance / Arrears:</span>
+                <strong>£485.50 (34 DPD)</strong>
+              </div>
+            </div>
+            <div style="background: #0f172a; border-radius: var(--radius-sm); padding: 10px; font-size: 0.78rem; font-family: var(--font-mono);">
+              <span style="color: #38bdf8;">[JOURNEY_AUDIT_TRAIL]:</span><br>
+              <span id="auditJourneySummary">• 12:34:02 - Portal accessed via SMS token link</span><br>
+              <span id="auditJourneyTrigger">• 12:34:45 - Vulnerability intake selected: Hardship declaration</span><br>
+              <span id="auditJourneyAction">• 12:34:46 - Collections suppression flag committed (30-day hold)</span><br>
+              <span>• Status: No customer re-explanation required (Customer Duty Principle 12 met)</span>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: center; gap: 14px; margin-top: 28px;">
+            <button class="btn btn-secondary" onclick="switchScreen('scr-1')">
+              Return to Portal Home
+            </button>
+            <button class="btn btn-secondary" onclick="signOutCustomer()">
+              Close Session
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- ========================================== -->
+  <!-- GLOBAL OVERLAY: INACTIVITY TIMEOUT MODAL   -->
+  <!-- ========================================== -->
+  <!--
+    [SCREEN ANNOTATION: GLOBAL OVERLAY - TIMEOUT MODAL]
+    • Related Story IDs: KAN-14 (Session Timeout Detection & Safeguarding)
+    • Key Data Shown: Inactivity warning prompt, countdown clock (02:00 down to 00:00), action choices ("Stay Logged In" vs "Save & Exit").
+    • Validation / Business Rule: Triggers after 13 minutes of inactivity (total 15-minute threshold). If timer expires without interaction, session terminates; if user was mid-transaction (SCR-04, 5A, 5B, 5C), account is tagged ABANDONED_IN_FLIGHT with a 48-hour collections suppression and routed to SCR-09.
+    • Next Steps in Journey: Click "Stay Logged In" -> resets timer & continues session. Click "Save & Exit" or countdown reaches 00:00 -> triggers executeSessionTimeout().
+  -->
+  <div id="timeoutModal" class="modal-overlay">
+    <div class="modal-card">
+      <div style="font-size: 2.2rem; margin-bottom: 10px;">⏳</div>
+      <h3 style="font-size: 1.3rem; font-weight: 700; color: var(--slate-900); margin-bottom: 6px;">Are You Still There?</h3>
+      <p style="font-size: 0.85rem; color: var(--slate-600); line-height: 1.45;">
+        To protect your personal financial security under UK GDPR, this session will expire shortly due to inactivity.
+      </p>
+
+      <div class="timeout-clock" id="timeoutCountdown">02:00</div>
+
+      <p style="font-size: 0.78rem; color: var(--slate-500); margin-bottom: 24px;">
+        Any selections you have made will be safely preserved with temporary contact protection.
+      </p>
+
+      <div style="display: flex; gap: 12px; justify-content: center;">
+        <button class="btn btn-primary" style="flex: 1;" onclick="resetInactivityTimer()">
+          Stay Logged In
+        </button>
+        <button class="btn btn-secondary" style="flex: 1;" onclick="executeSessionTimeout()">
+          Save &amp; Exit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Logic & State Management Script -->
+  <script>
+    // State Tracking
+    const state = {
+      currentScreen: 'scr-1',
+      accountRef: 'SR-89421',
+      customerName: 'Alex Taylor',
+      totalBalance: 485.50,
+      authAttemptsRemaining: 3,
+      isAuthenticated: false,
+      selectedPlanMonths: 12,
+      selectedPlanAmount: 40.46,
+      promiseDate: '',
+      inactivitySecondsLeft: 120,
+      inactivityTimerInterval: null,
+      timeoutSimulated: false,
+      lastExceptionReason: 'hardship'
+    };
+
+    // Screen Metadata for BA Spec Drawer
+    const screenSpecs = {
+      'scr-1': {
+        title: 'Screen 1: Landing / Entry Page (SCR-01)',
+        desc: 'Entry screen welcoming customers arriving via SMS, email, or direct URL. Sets brand trust and regulatory credentials without displaying any sensitive customer financial details prior to authentication.',
+        jira: 'KAN-4, KAN-9',
+        bpmn: 'Access Portal (Customer Lane)',
+        rule: 'Zero account data visible before authentication'
+      },
+      'scr-2': {
+        title: 'Screen 2: Identity Verification & Sign-In Assistance (SCR-02)',
+        desc: 'Lightweight, frictionless OTP verification confirming customer identity with a 3-attempt lockout threshold before exposing financial details.',
+        jira: 'KAN-4 (Highest / Must-Have), KAN-9',
+        bpmn: 'Request verification -> Provide details -> Are details valid? (Attempts check)',
+        rule: '3 failed OTP attempts triggers AUTH_LOCKOUT and routes to representative'
+      },
+      'scr-3': {
+        title: 'Screen 3: Account Summary Dashboard (SCR-03)',
+        desc: 'Transparent cleared balance overview, itemized charges, and prominent vulnerability/hardship escape banner. Empowers customer understanding with zero aggressive language.',
+        jira: 'KAN-5 (High), KAN-16',
+        bpmn: 'Display Account Summary & Eligible Actions',
+        rule: 'Targets 12.49% balance enquiry deflection; immediate vulnerability escape'
+      },
+      'scr-4': {
+        title: 'Screen 4: Choose Next Action / Triage & Intent Selector (SCR-04)',
+        desc: 'Rules-based intent selector presenting distinct pathways: Pay in Full, Promise to Pay, Installment Plan, Dispute, or Hardship.',
+        jira: 'KAN-5, KAN-7 (Rules-Based Triage), KAN-18',
+        bpmn: 'What does the customer want to do? (Decision Gateway)',
+        rule: 'Straightforward (38%) into self-service; complex/vulnerable routed to specialists'
+      },
+      'scr-5a': {
+        title: 'Screen 5A: Digital Promise-to-Pay Setup (SCR-05)',
+        desc: 'Interactive calendar selector allowing customers to commit to a single future date strictly capped at 30 calendar days from today.',
+        jira: 'KAN-20 (OP-03, High), KAN-17',
+        bpmn: 'Collect digital promise to pay -> Add payment schedule to system',
+        rule: 'Strict 30-day cap; automated 48-hour prior reminder; 24h batch sync (KAN-12)'
+      },
+      'scr-5b': {
+        title: 'Screen 5B: Eligible Payment Plan Flow (SCR-06/07)',
+        desc: 'Standardized installment calculator presenting 3, 6, 9, or 12 month schedules with Direct Debit setup. Enforces £15/mo minimum policy floor.',
+        jira: 'KAN-6 (OP-04, High), KAN-17',
+        bpmn: 'Display eligible payment plans -> Select plan -> Add mandate',
+        rule: 'Arrears £50–£5,000 eligible; £15/mo floor; escape link routes bespoke terms'
+      },
+      'scr-pay': {
+        title: 'Screen 5C: Immediate Settlement / Card Payment (SCR-04b)',
+        desc: 'Secure payment capture requiring verified debit card authorization before clearing arrears and dispatching instant confirmation.',
+        jira: 'KAN-5, KAN-8 (Dual-Store Audit)',
+        bpmn: 'Capture full debit payment -> Authorize transaction -> Clear balance',
+        rule: 'Payment must be authorized before confirmation receipt is generated'
+      },
+      'scr-6': {
+        title: 'Screen 6: Confirmation & Next Steps (SCR-08)',
+        desc: 'Instant digital peace of mind confirming agreement registration, enforcement pause, receipt generation, and dual-store audit logging.',
+        jira: 'KAN-8 (Dual-Store Audit), KAN-12 (24h Sync), KAN-20, KAN-6',
+        bpmn: 'End initial interaction -> Add follow-up to system',
+        rule: 'Generates timestamped audit log; commits to 24h legacy sync pipeline'
+      },
+      'scr-7': {
+        title: 'Screen 7: Routed to Representative / Specialist Handoff (SCR-09)',
+        desc: 'Compassionate handoff for vulnerable, disputed, or locked-out accounts with 30-day breathing space, charity resources, and specialist screen context (KAN-15).',
+        jira: 'KAN-7, KAN-11 (Vulnerability Freeze), KAN-14 (Timeout), KAN-15 (Specialist View)',
+        bpmn: 'Refer to representative -> Queue safeguarding & interaction freeze',
+        rule: 'Immediate 30-day collections freeze; no customer context repetition'
+      }
+    };
+
+    // Navigation Switcher
+    function switchScreen(screenId) {
+      document.querySelectorAll('.portal-screen').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.add('active');
+        state.currentScreen = screenId;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Update Toolbar Pills
+      document.querySelectorAll('.screen-pill').forEach(pill => pill.classList.remove('active'));
+      const pillMap = {
+        'scr-1': 0, 'scr-2': 1, 'scr-3': 2, 'scr-4': 3,
+        'scr-5a': 4, 'scr-5b': 5, 'scr-pay': 6, 'scr-6': 7, 'scr-7': 8
+      };
+      const pills = document.querySelectorAll('.screen-pill');
+      if (pills[pillMap[screenId]]) {
+        pills[pillMap[screenId]].classList.add('active');
+      }
+
+      // Update Spec Drawer
+      updateSpecDrawer(screenId);
+
+      // Manage Header Auth Status
+      const authHeader = document.getElementById('authHeaderStatus');
+      if (['scr-3', 'scr-4', 'scr-5a', 'scr-5b', 'scr-pay', 'scr-6'].includes(screenId)) {
+        authHeader.style.display = 'flex';
+        state.isAuthenticated = true;
+      } else if (screenId === 'scr-1') {
+        authHeader.style.display = 'none';
+      }
+    }
+
+    function updateSpecDrawer(screenId) {
+      const spec = screenSpecs[screenId];
+      if (!spec) return;
+      document.getElementById('baScreenTitle').innerText = spec.title;
+      document.getElementById('baScreenDescription').innerText = spec.desc;
+      document.getElementById('baTagJira').innerText = 'Jira: ' + spec.jira;
+      document.getElementById('baTagBpmn').innerText = 'BPMN: ' + spec.bpmn;
+      document.getElementById('baTagRule').innerText = 'Rule: ' + spec.rule;
+    }
+
+    function toggleTraceabilityBanner() {
+      const banner = document.getElementById('baTraceabilityBanner');
+      banner.style.display = banner.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    // Screen 2: OTP Verification & Attempt Lockout Safeguard
+    function handleOtpVerification() {
+      const otpVal = document.getElementById('otpInput').value.trim();
+      const errorMsg = document.getElementById('authErrorMessage');
+
+      if (otpVal === '482910' || otpVal === '123456' || otpVal === '') {
+        // Successful verification
+        errorMsg.style.display = 'none';
+        state.isAuthenticated = true;
+        state.authAttemptsRemaining = 3;
+        switchScreen('scr-3');
+      } else {
+        simulateFailedAttempt();
+      }
+    }
+
+    function simulateFailedAttempt() {
+      state.authAttemptsRemaining--;
+      const counterEl = document.getElementById('attemptsCounter');
+      const errorMsg = document.getElementById('authErrorMessage');
+      errorMsg.style.display = 'block';
+
+      if (state.authAttemptsRemaining > 0) {
+        counterEl.innerText = `⚠️ ${state.authAttemptsRemaining} Attempt(s) Remaining Before Lockout`;
+        counterEl.style.background = '#fef2f2';
+        counterEl.style.color = '#b91c1c';
+      } else {
+        // Lockout reached (KAN-4)
+        routeToException('lockout');
+      }
+    }
+
+    // Screen 4: Intent Selection
+    function selectIntentPathway(pathway) {
+      if (pathway === 'pay-now') {
+        fillTestCardDetails();
+        switchScreen('scr-pay');
+      } else if (pathway === 'promise') {
+        initPromiseDatePicker();
+        switchScreen('scr-5a');
+      } else if (pathway === 'plan') {
+        switchScreen('scr-5b');
+      } else if (pathway === 'dispute') {
+        routeToException('dispute');
+      } else if (pathway === 'hardship') {
+        routeToException('hardship');
+      }
+    }
+
+    // Screen 5C: Pay in Full - payment must succeed before confirmation
+    function fillTestCardDetails() {
+      document.getElementById('payCardName').value = 'Alex Taylor';
+      document.getElementById('payCardNumber').value = '4532 0150 8942 1092';
+      document.getElementById('payCardExpiry').value = '08/28';
+      document.getElementById('payCardCvv').value = '789';
+      document.getElementById('payError').style.display = 'none';
+    }
+
+    function submitFullPayment() {
+      const name = document.getElementById('payCardName').value.trim();
+      const number = document.getElementById('payCardNumber').value.replace(/\s+/g, '');
+      const expiry = document.getElementById('payCardExpiry').value.trim();
+      const cvv = document.getElementById('payCardCvv').value.trim();
+      const err = document.getElementById('payError');
+
+      let msg = '';
+      if (!name) msg = 'Please enter the name on your card.';
+      else if (!/^\d{13,19}$/.test(number)) msg = 'Please enter a valid card number.';
+      else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) msg = 'Please enter a valid expiry date (MM/YY).';
+      else if (!/^\d{3,4}$/.test(cvv)) msg = 'Please enter a valid CVV.';
+      if (msg) {
+        err.innerText = msg;
+        err.style.display = 'block';
+        return;
+      }
+      err.style.display = 'none';
+
+      state.selectedPlanMonths = 1;
+      state.selectedPlanAmount = 485.50;
+      document.getElementById('confirmType').innerText = 'Immediate Full Balance Settlement';
+      document.getElementById('confirmAmount').innerText = '£485.50 (Paid in Full)';
+      document.getElementById('confirmDueDate').innerText = 'Today (Immediate)';
+      document.getElementById('confirmMethod').innerText = `Online Debit Card (•••• ${number.slice(-4)})`;
+      ['payCardName', 'payCardNumber', 'payCardExpiry', 'payCardCvv'].forEach(id => document.getElementById(id).value = '');
+      switchScreen('scr-6');
+    }
+
+    // Screen 5A: Promise to Pay Dynamic Logic
+    function initPromiseDatePicker() {
+      const dateInput = document.getElementById('p2pDatePicker');
+      const today = new Date();
+      const minDate = new Date();
+      minDate.setDate(today.getDate() + 1);
+
+      const maxDate = new Date();
+      maxDate.setDate(today.getDate() + 30); // 30-day cap rule
+
+      dateInput.min = minDate.toISOString().split('T')[0];
+      dateInput.max = maxDate.toISOString().split('T')[0];
+
+      // Default to 28 days
+      setQuickP2PDate(28);
+    }
+
+    function setQuickP2PDate(daysFromNow) {
+      const dateInput = document.getElementById('p2pDatePicker');
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() + daysFromNow);
+      const dateStr = targetDate.toISOString().split('T')[0];
+      dateInput.value = dateStr;
+      validatePromiseDate();
+    }
+
+    function validatePromiseDate() {
+      const dateInput = document.getElementById('p2pDatePicker');
+      const chosen = new Date(dateInput.value);
+      const today = new Date();
+      const diffDays = Math.ceil((chosen - today) / (1000 * 60 * 60 * 24));
+      const msg = document.getElementById('p2pValidationMsg');
+
+      if (diffDays < 1 || diffDays > 30 || isNaN(diffDays)) {
+        msg.innerText = '⚠️ Date must strictly be between 1 and 30 days from today.';
+        msg.style.color = 'var(--danger)';
+      } else {
+        msg.innerText = `✓ Valid commitment date (${diffDays} days from today). 30-day cap verified.`;
+        msg.style.color = 'var(--teal-600)';
+
+        // Format date string
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        const formatted = chosen.toLocaleDateString('en-GB', options);
+        document.getElementById('p2pSummaryDate').innerText = formatted;
+
+        // Reminder date = 48 hours prior
+        const reminder = new Date(chosen);
+        reminder.setDate(reminder.getDate() - 2);
+        document.getElementById('p2pReminderDate').innerText = reminder.toLocaleDateString('en-GB', options);
+        state.promiseDate = formatted;
+      }
+    }
+
+    function confirmPromiseToPay() {
+      const chosen = document.getElementById('p2pDatePicker').value;
+      if (!chosen) {
+        alert('Please choose a valid settlement date.');
+        return;
+      }
+      document.getElementById('confirmType').innerText = 'Digital Promise to Pay (Full Settlement)';
+      document.getElementById('confirmAmount').innerText = '£485.50 (Single Payment)';
+      document.getElementById('confirmDueDate').innerText = state.promiseDate || 'In 28 Days';
+      document.getElementById('confirmMethod').innerText = 'Automated Reminder & Pre-Authorized Card';
+      switchScreen('scr-6');
+    }
+
+    // Screen 5B: Payment Plan Dynamic Calculator
+    function selectPlanCard(months, amount, cardElement) {
+      state.selectedPlanMonths = months;
+      state.selectedPlanAmount = amount;
+
+      document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+      cardElement.classList.add('selected');
+
+      document.getElementById('summaryTermLength').innerText = `${months} Months`;
+      document.getElementById('summaryMonthlyAmount').innerText = `£${amount.toFixed(2)}`;
+
+      const firstDate = new Date();
+      firstDate.setMonth(firstDate.getMonth() + 1);
+      firstDate.setDate(1);
+      document.getElementById('summaryFirstPaymentDate').innerText = firstDate.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function confirmPaymentPlan() {
+      document.getElementById('confirmType').innerText = `${state.selectedPlanMonths}-Month Structured Payment Plan`;
+      document.getElementById('confirmAmount').innerText = `£${state.selectedPlanAmount.toFixed(2)} / month`;
+      document.getElementById('confirmDueDate').innerText = document.getElementById('summaryFirstPaymentDate').innerText;
+      document.getElementById('confirmMethod').innerText = `Direct Debit Mandate (Acc: •••• 9201, Sort: 20-45-78)`;
+      switchScreen('scr-6');
+    }
+
+    // Screen 7: Dynamic Exception & Handoff Routing
+    function routeToException(reason) {
+      state.lastExceptionReason = reason;
+      const heading = document.getElementById('routedHeading');
+      const subtitle = document.getElementById('routedSubtitle');
+      const banner = document.getElementById('routedBanner');
+      const bannerTitle = document.getElementById('routedBannerTitle');
+      const bannerText = document.getElementById('routedBannerText');
+      const caseRef = document.getElementById('routedCaseRef');
+      const charityBox = document.getElementById('charityBox');
+      const auditTrigger = document.getElementById('auditJourneyTrigger');
+      const auditAction = document.getElementById('auditJourneyAction');
+
+      // Reset banner styles
+      banner.className = 'alert-banner-routed';
+
+      if (reason === 'hardship') {
+        heading.innerText = 'Financial Hardship & Vulnerability Support';
+        subtitle.innerText = 'We understand circumstances change. Collections activity on your account has been paused while our specialist team reviews your situation.';
+        banner.classList.add('vulnerability');
+        bannerTitle.innerText = '30-Day Breathing Space Pause Activated';
+        bannerText.innerText = 'Under our financial distress and vulnerability policy, all automated collections, notices, and enforcement actions are suspended for 30 calendar days.';
+        caseRef.innerText = 'CASE: VUL-94812';
+        charityBox.style.display = 'block';
+        auditTrigger.innerHTML = '• 12:34:45 - Vulnerability reported via self-service intake (KAN-11)';
+        auditAction.innerHTML = '• 12:34:46 - 30-Day Breathing Space freeze committed. Flag: VULNERABILITY_BREATHING_SPACE';
+      } else if (reason === 'dispute') {
+        heading.innerText = 'Balance Dispute Formally Logged';
+        subtitle.innerText = 'Your balance dispute has been registered with the collections team’s specialist dispute triage unit for thorough investigation.';
+        bannerTitle.innerText = '14-Day Collections Investigation Pause';
+        bannerText.innerText = 'Automated collections and payment reminders are temporarily paused for 14 calendar days while our team reviews the itemized charges and documentation.';
+        caseRef.innerText = 'CASE: DISP-38104';
+        charityBox.style.display = 'none';
+        auditTrigger.innerHTML = '• 12:35:10 - Formal balance dispute raised by customer (KAN-7)';
+        auditAction.innerHTML = '• 12:35:11 - dispute_status set to OPEN_FORMAL. 14-day hold applied to ledger.';
+      } else if (reason === 'lockout') {
+        heading.innerText = 'Account Security Lockout';
+        subtitle.innerText = 'For your security, access has been temporarily locked following 3 consecutive unsuccessful verification attempts.';
+        banner.classList.add('lockout');
+        bannerTitle.innerText = 'Authentication Lockout Triggered (AUTH_LOCKOUT)';
+        bannerText.innerText = 'Your account details remain safe. To unlock your account or verify via alternative security questions, please contact our collections team.';
+        caseRef.innerText = 'CASE: SEC-00129';
+        charityBox.style.display = 'none';
+        auditTrigger.innerHTML = '• 12:32:15 - 3 consecutive OTP failures detected (KAN-4)';
+        auditAction.innerHTML = '• 12:32:16 - AUTH_LOCKOUT flag raised. Collections team credential reset required.';
+      } else if (reason === 'timeout') {
+        heading.innerText = 'Session Safeguarded & Saved';
+        subtitle.innerText = 'Your session timed out due to inactivity to protect your financial privacy on shared devices.';
+        bannerTitle.innerText = 'In-Flight Journey Preserved (48-Hour Contact Hold)';
+        bannerText.innerText = 'Because you were configuring a repayment option, your progress has been safely logged with an ABANDONED_IN_FLIGHT flag and a 48-hour collections hold.';
+        caseRef.innerText = 'CASE: TMO-55201';
+        charityBox.style.display = 'block';
+        auditTrigger.innerHTML = '• 12:45:00 - 13m idle + 2m countdown expired mid-transaction (KAN-14)';
+        auditAction.innerHTML = '• 12:45:01 - ABANDONED_IN_FLIGHT set. 48-hour temporary contact suppression active.';
+      } else if (reason === 'bespoke-plan') {
+        heading.innerText = 'Custom Repayment Plan Request';
+        subtitle.innerText = 'Standard online plans are capped between 3 and 12 months with a £15/mo minimum. Our specialist team can assess customized terms.';
+        bannerTitle.innerText = 'Transferred to Senior Specialist Queue';
+        bannerText.innerText = 'Your request for terms outside standard policy has been routed to the collections team for individual affordability assessment.';
+        caseRef.innerText = 'CASE: BES-77319';
+        charityBox.style.display = 'block';
+        auditTrigger.innerHTML = '• 12:36:20 - Customer requested terms outside standard 3–12m / £15 floor (KAN-6)';
+        auditAction.innerHTML = '• 12:36:21 - Routed to senior specialist queue for manual affordability interview.';
+      } else {
+        heading.innerText = 'Customer Support Team Assistance';
+        subtitle.innerText = 'Our specialist representatives are available to assist you with any questions or alternative account arrangements.';
+        bannerTitle.innerText = 'Direct Contact Information';
+        bannerText.innerText = 'Please have your reference number SR-89421 ready when calling so our team can immediately access your context.';
+        caseRef.innerText = 'CASE: GEN-11042';
+        charityBox.style.display = 'none';
+        auditTrigger.innerHTML = '• 12:30:00 - Customer selected phone/collections team assistance route';
+        auditAction.innerHTML = '• 12:30:01 - Priority phone line and callback options displayed.';
+      }
+
+      switchScreen('scr-7');
+    }
+
+    function toggleSpecialistDrawer() {
+      const drawer = document.getElementById('specialistDrawer');
+      const icon = document.getElementById('drawerToggleIcon');
+      drawer.classList.toggle('open');
+      icon.innerText = drawer.classList.contains('open') ? '▲' : '▼';
+    }
+
+    // Call Back Submission Handlers
+    function submitCallbackRequest() {
+      const phone = document.getElementById('callbackPhone').value.trim() || '07700 900412';
+      const day = document.getElementById('callbackDay').value;
+      const slot = document.getElementById('callbackTimeSlot').value;
+
+      document.getElementById('callbackFormContainer').style.display = 'none';
+      const successNotice = document.getElementById('callbackSuccessNotice');
+      const details = document.getElementById('callbackSuccessDetails');
+      details.innerHTML = `A specialist from the collections team will call you on <strong>${phone}</strong> on <strong>${day}</strong> during the <strong>${slot}</strong> window. Case priority reference: <code>CB-${state.accountRef}</code>.`;
+      successNotice.style.display = 'block';
+
+      // Update KAN-15 audit trail
+      const auditAction = document.getElementById('auditJourneyAction');
+      if (auditAction) {
+        auditAction.innerHTML = `• Scheduled Call Back: ${day} (${slot}) to ${phone}. Priority case assigned to specialist.`;
+      }
+    }
+
+    function resetCallbackForm() {
+      document.getElementById('callbackFormContainer').style.display = 'block';
+      document.getElementById('callbackSuccessNotice').style.display = 'none';
+    }
+
+    // Global Overlay: Inactivity Timeout (KAN-14)
+    function triggerInactivityModal() {
+      document.getElementById('timeoutModal').classList.add('active');
+      state.inactivitySecondsLeft = 120; // 2-minute countdown
+      clearInterval(state.inactivityTimerInterval);
+
+      state.inactivityTimerInterval = setInterval(() => {
+        state.inactivitySecondsLeft--;
+        const mins = String(Math.floor(state.inactivitySecondsLeft / 60)).padStart(2, '0');
+        const secs = String(state.inactivitySecondsLeft % 60).padStart(2, '0');
+        document.getElementById('timeoutCountdown').innerText = `${mins}:${secs}`;
+
+        if (state.inactivitySecondsLeft <= 0) {
+          clearInterval(state.inactivityTimerInterval);
+          executeSessionTimeout();
+        }
+      }, 1000);
+    }
+
+    function resetInactivityTimer() {
+      clearInterval(state.inactivityTimerInterval);
+      document.getElementById('timeoutModal').classList.remove('active');
+      document.getElementById('timeoutCountdown').innerText = '02:00';
+    }
+
+    function executeSessionTimeout() {
+      clearInterval(state.inactivityTimerInterval);
+      document.getElementById('timeoutModal').classList.remove('active');
+      // If customer was on an active action screen, route to mid-transaction timeout
+      if (['scr-4', 'scr-5a', 'scr-5b', 'scr-pay'].includes(state.currentScreen)) {
+        routeToException('timeout');
+      } else {
+        // Early bounce/exit -> purge session and return to Landing (no queue spam)
+        signOutCustomer();
+      }
+    }
+
+    function signOutCustomer() {
+      state.isAuthenticated = false;
+      state.authAttemptsRemaining = 3;
+      document.getElementById('authHeaderStatus').style.display = 'none';
+      document.getElementById('attemptsCounter').innerText = '🛡️ 3 Verification Attempts Remaining';
+      document.getElementById('attemptsCounter').style.background = 'var(--warning-bg)';
+      document.getElementById('attemptsCounter').style.color = 'var(--warning)';
+      document.getElementById('otpInput').value = '';
+      document.getElementById('authErrorMessage').style.display = 'none';
+      switchScreen('scr-1');
+    }
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', () => {
+      initPromiseDatePicker();
+      updateSpecDrawer('scr-1');
+    });
+  </script>
+</body>
+</html>

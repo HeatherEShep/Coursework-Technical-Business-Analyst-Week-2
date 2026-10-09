@@ -1,0 +1,468 @@
+Summary,Issue key,Issue id,Issue Type,Status,Project key,Project name,Project type,Project lead,Project lead id,Project description,Priority,Resolution,Assignee,Assignee Id,Reporter,Reporter Id,Creator,Creator Id,Created,Updated,Last Viewed,Resolved,Due date,Votes,Labels,Description,Environment,Watchers,Watchers Id,Original estimate,Remaining Estimate,Time Spent,Work Ratio,Σ Original Estimate,Σ Remaining Estimate,Σ Time Spent,Security Level,Custom field (Development),Custom field (Issue color),Custom field (Rank),Custom field (Start date),Custom field (Team),Parent,Parent key,Parent summary,Status category,Status category changed
+Customer Identity Verification and Sign-In Assistance,KAN-4,10012,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Highest,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,06/Oct/26 5:24 PM,08/Oct/26 12:21 PM,08/Oct/26 12:03 PM,,,0,role-security-auth-engineer,"h2. Title
+
+Customer Identity Verification, Lockout Threshold, and Representative Credential Reset
+
+h2. User Story Statement
+
+As a customer accessing the self-service portal, I want to securely verify my identity using a one-time passcode (OTP) sent to my registered mobile or email with a 3-attempt retry threshold, so that my financial information is protected and I can securely manage my account.
+
+h2. Business Value
+
+Ensures strict UK GDPR and consumer credit regulatory compliance, prevents account takeover, and establishes customer trust at portal entry.
+
+h2. Acceptance Criteria
+
+* Given a customer enters valid account identification details, when submitted, then a 6-digit cryptographic OTP is sent to their registered mobile or email, valid for 5 minutes (rate-limited to 3 requests per hour).
+* Given a customer enters the correct OTP, when validated, then the customer is authenticated and redirected to the Account Summary Dashboard (KAN-5).
+* Given an incorrect OTP is entered, when submitted with fewer than 3 attempts, then an error message indicates the failure and displays the remaining attempts.
+* Given a customer fails OTP verification on the 3rd consecutive attempt, when triggered, then the session is locked, the event is logged to Portal Metadata and Portal interaction history, and the customer is provided with support contact information and routed to staff for credential reset.
+* Given a locked-out customer contacts staff, when a representative verifies security questions, then the representative can reset credentials allowing the customer to re-enter the self-service portal.
+
+h2. Dependencies
+
+* SMS/Email delivery gateway
+* Rules-based triage (KAN-7)
+* Dual-store audit logging (KAN-8)
+
+h2. Priority
+
+Highest / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 2 (Authentication)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* Security / Auth Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Daniel (GDPR, security standards & verification wording sign-off)
+* *MVP note:* Staff credential reset will rely on *existing CRM/telephony admin tooling and the current SOP* for Phase 1/MVP; *any bespoke agent tooling is explicitly deferred to Phase 2*.
+* *ROI & workflow justification:* Mandatory front-door security gate. Customers cannot view balance data without authentication. Prevents regulatory fines and ensures data integrity.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0002k:,,,10017,KAN-9,Access and verification,To Do,06/Oct/26 5:24 PM
+Account Summary Dashboard and Self-Service Options,KAN-5,10013,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,High,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,06/Oct/26 5:25 PM,08/Oct/26 12:08 PM,08/Oct/26 12:04 PM,,,0,role-frontend-ui-ux-engineer,"h2. Title
+
+Account Summary Dashboard and Self-Service Action Navigation
+
+h2. User Story Statement
+
+As an authenticated customer with an overdue balance, I want to view a transparent summary of my cleared balance, charge breakdown, and eligible next steps, so that I clearly understand my financial position and can choose an appropriate resolution pathway.
+
+h2. Business Value
+
+Eliminates routine balance inquiries, targeting the 12.49% of accounts with overdue balances, and unlocking over 1,000 hours of frontline staff capacity on Day 1.
+
+h2. Acceptance Criteria
+
+* Given a verified customer enters the portal dashboard, when the page loads, then it displays the total up-to-date cleared balance, account status, and an itemized breakdown of principal, fees, and payments received.
+* Given the dashboard view, when displayed, then the interface clearly presents 5 distinct, mutually exclusive primary action pathways:
+*# View detailed balance and charge breakdown
+*# Set up a manageable payment plan (OP-04 - KAN-6)
+*# Set a single payment promise date (OP-03 - KAN-20)
+*# Report financial difficulty or vulnerability (Handoff -> KAN-11)
+*# Dispute this balance (Dedicated dispute pathway)
+* Given a customer wishes to dispute their balance, when they click *Dispute this balance*, then automated collections pause for 14 days, self-service is halted, and the case routes to Gareth's specialist team with reason code {{CUSTOMER_DISPUTE_RAISED}} and support contact details shown.
+
+h2. Dependencies
+
+* Customer Identity Verification (KAN-4)
+* Core ledger/balance API
+
+h2. Priority
+
+High / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 3 (Account Visibility)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* Frontend UI/UX Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Product Owner & Daniel (balance disclosure wording sign-off)
+* *New Assumption:* 14-day dispute collection pause duration is an assumption subject to policy confirmation with Daniel.
+* *ROI & workflow justification:* Unlocks immediate operational savings (£30.8k/yr) by deflecting balance calls, creating the primary decision gateway for revenue recovery.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0002w:,,,10024,KAN-16,Account visibility,To Do,06/Oct/26 5:25 PM
+Eligible Payment Plan Selection ,KAN-6,10014,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,High,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,06/Oct/26 5:25 PM,08/Oct/26 12:21 PM,08/Oct/26 12:04 PM,,,0,role-backend-payments-specialist,"h2. Title
+
+Eligible Payment Plan Selection and Mandate Setup
+
+h2. User Story Statement
+
+As a customer unable to pay my balance in full today, I want to select an affordable monthly installment plan (3 to 12 months) and set up Direct Debit or card payments online, so that I can clear my arrears sustainably without negotiating over the phone.
+
+h2. Business Value
+
+Primary driver of the ROI model, delivering the 4% payment plan recovery uplift within the £2.37M net revenue benefit.
+
+h2. Definitions
+
+*Eligible* means:
+
+* arrears between *£50 and £5,000* (inclusive)
+* {{risk_flag != 'Y'}}
+* {{dispute_status = 'NONE'}}
+* *no litigation* in progress / no active legal hold
+
+*Affordability policy (MVP standard options):*
+
+* installment schedules: *3, 6, 9, 12 months*
+* minimum payment: *£15/month*
+
+h2. Acceptance Criteria
+
+* Given an eligible customer selects *Set up a Payment Plan*, when options are displayed, then the system presents pre-calculated installment schedules for 3, 6, 9, and 12 months based on standardized affordability policy.
+* Given a customer selects a schedule, when entering payment details, then the system integrates with the payment gateway to tokenize Direct Debit or recurring card mandates securely.
+* Given a customer requires a plan longer than 12 months, balance write-offs, or cannot afford standard options, when they click *I need different terms*, then self-service pauses and the account is routed directly to Gareth's senior specialist team.
+* Given a confirmed payment plan, when finalized, then an instant digital receipt is generated, confirmation is emailed/SMSed, and data is staged for 24h sync (KAN-12).
+
+h2. Dependencies
+
+* Account Summary Dashboard (KAN-5)
+* Payment gateway (Direct Debit / tokenized card setup)
+* Automated 24h Sync (KAN-12)
+
+h2. Priority
+
+High / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 4b (Payment Plan Selection & Mandate)
+* *Estimate:* 8 Story Points
+* *Proposed Assignee Role:* Senior Backend Engineer & Payment Integration Specialist
+* *Payment gateway dependency:* Integration owned by *Senior Backend Engineer / Gateway provider*.
+* *Governance / Stakeholder Sign-Off Gate:* Daniel (compliance sign-off on consumer credit repayment agreements, CCA terms, and reminder wording)
+* *ROI & workflow justification:* Core revenue engine of Phase 1, converting arrears into scheduled cash inflows while deflecting negotiation calls.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i00030:,,,10025,KAN-17,Promise-to-pay / payment plan journey,To Do,06/Oct/26 5:25 PM
+Automated Case Sorting and Complexity Routing,KAN-7,10015,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Highest,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,06/Oct/26 5:25 PM,08/Oct/26 12:21 PM,08/Oct/26 12:05 PM,,,0,role-backend-rules-engineer,"h2. Title
+
+Rules-Based Contact Triage and Case Complexity Routing
+
+h2. User Story Statement
+
+As a collections operations manager, I want inbound customer interactions evaluated upfront by an automated rules engine, so that straightforward accounts (38%) are guided to self-service while complex or vulnerable cases route directly to specialists.
+
+h2. Business Value
+
+Maximizes frontline efficiency by deflecting routine accounts to self-service, reducing customer wait times and protecting vulnerable customers from inappropriate automation. Connects to the ROI model by qualifying the 38% straightforward accounts that deliver the £2.40M annual benefit.
+
+h2. Acceptance Criteria
+
+* Given an inbound customer access or contact request, when the rules engine screens the account, then it evaluates core records against the explicit vulnerability rule: {{risk_flag = 'Y'}} OR {{vulnerability_category IN ('HEALTH', 'BEREAVEMENT', 'HARDSHIP', 'BREATHING_SPACE')}}.
+* Given an incoming account has {{risk_flag = 'Y'}} or matches a vulnerability category, when evaluated, then automated collections and self-service are blocked, and the account is routed directly to Gareth's specialist team.
+* Given an account has an active formal dispute, defined explicitly as {{dispute_status = 'OPEN_FORMAL'}} (contested liability, legal representation, balance calculation objection, or open complaint), when screened, then self-service is disabled and the case routes to Gareth's dispute specialists.
+* Given an account is classified as straightforward ({{risk_flag != 'Y'}}, no formal dispute, standard delinquency), when evaluated, then the customer is guided into the self-service verification flow (KAN-4).
+
+h2. Dependencies
+
+* Core banking/CRM account attributes ({{risk_flag}}, {{dispute_status}})
+
+h2. Priority
+
+Highest / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 1 (Upfront Triage)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* Backend / Rules Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Gareth (specialist queue capacity and triage threshold agreement)
+* *New Assumptions:*
+** Gareth will confirm the *frontline collections triage queue* operating model and ownership for items routed using these metadata flags.
+** Availability and schema of {{vulnerability_category}} and {{dispute_status}} in legacy/CRM databases are assumptions to be validated; policy rules and thresholds to be confirmed with Daniel.
+* *ROI & workflow justification:* Essential architectural pre-condition for the entire portal; protects projected recovery uplift (2.5% promise, 4% plan) by ensuring only viable accounts enter self-service while insulating the team from regulatory risk.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003b:,,,10026,KAN-18,Routing and exception handling,To Do,06/Oct/26 5:25 PM
+Clear Customer Interaction and Audit Record Keeping,KAN-8,10016,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,High,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,06/Oct/26 5:26 PM,08/Oct/26 12:21 PM,08/Oct/26 12:09 PM,,,0,role-platform-data-engineer,"h2. Title
+
+Compliance Audit Trail for Customer Servicing & Payment Actions (Dual-Store)
+
+h2. User Story Statement
+
+As an internal auditor or compliance officer, I want every portal action, agreement, failure, and handoff logged synchronously to Portal Metadata and Portal interaction history, so that we maintain a tamper-evident audit trail satisfying statutory retention and regulatory inquiries.
+
+h2. Business Value
+
+Eliminates regulatory audit findings under FCA Consumer Duty, supports dispute investigations, and protects the firm from legal liabilities.
+
+h2. Acceptance Criteria
+
+* Given any portal state transition (login attempt, verification failure, plan creation, promise to pay, timeout, vulnerability disclosure), when executed, then an immutable event record is written to Portal interaction history with UTC timestamp, account ID, actor, and outcome.
+* Given user-selected parameters (payment terms, schedule frequency, lockout count), when modified, then the latest state is updated in Portal Metadata.
+* Given audit log records, then entries are read-only, tamper-evident, and retained in compliance with the statutory 6-year retention schedule.
+
+h2. Dependencies
+
+* Direct transactional logging / application event logger
+* Secure dual-store database tables
+
+h2. Priority
+
+High / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 9 (Audit Trail Logging)
+* *Estimate:* 3 Story Points
+* *Proposed Assignee Role:* Platform / Data Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Daniel (statutory retention & regulatory compliance audit sign-off)
+* *New Assumption:* 6-year retention duration is an assumption subject to policy confirmation with Daniel under FCA Consumer Duty and limitation rules.
+* *Scope justification:* Mandatory regulatory enabler. Under FCA rules and statutory standards, capturing tamper-evident logs of customer agreements and disclosures is non-negotiable for launch.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003e:,,,10027,KAN-19,Reporting and audit trail,To Do,06/Oct/26 5:26 PM
+Access and verification,KAN-9,10017,Epic,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,06/Oct/26 5:35 PM,06/Oct/26 5:35 PM,06/Oct/26 5:36 PM,,,0,,Ensure customers and representatives can securely access the portal and verify identity with minimal friction. ,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},dark_orange,0|i0003o:,,,,,,To Do,06/Oct/26 5:35 PM
+Daily Reconciliation of Online Payments and Promises,KAN-10,10018,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:29 AM,08/Oct/26 12:08 PM,08/Oct/26 12:09 PM,,,0,role-data-batch-pipeline-dev,"h2. Title
+
+Daily Reconciliation of Online Payments and Promises
+
+h2. User Story Statement
+
+As a financial operations and reconciliation analyst, I want an automated daily reconciliation between portal interactions and backend accounting/collections ledgers, so that all digital payment plans, promises, and transactions are verified for financial integrity and discrepancies are flagged.
+
+h2. Business Value
+
+Guarantees ledger integrity, prevents revenue leakage, and ensures customer statements and balances reflect verified payments.
+
+h2. Acceptance Criteria
+
+* Given the daily batch reconciliation job runs, when executed, then it compares all promises and plan setups from Portal interaction history against legacy collections ledger records for the past 24 hours.
+* Given records match across systems, when validated, then transactions are marked *Reconciled*.
+* Given any discrepancy (e.g., plan active in portal but missing in legacy ledger, or amount mismatch), when identified, then an automated exception record is generated and routed to the finance operations queue for review.
+
+h2. Dependencies
+
+* Automated 24h Sync (KAN-12)
+* Dual-store audit logging (KAN-8)
+* Legacy collections database extracts
+
+h2. Priority
+
+Medium / Should-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 10 (Financial Reconciliation)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* Data / Batch Pipeline Dev
+* *Governance / Stakeholder Sign-Off Gate:* Finance Operations Lead (owner TBC)
+* *Scope justification:* Operational safeguard required to validate the 24-hour sync dependency, catching ledger mismatches before statements issue.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003n:r,,,10027,KAN-19,Reporting and audit trail,To Do,07/Oct/26 10:29 AM
+Customer Hardship and Vulnerability Notification with Immediate Action Freeze,KAN-11,10019,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Highest,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:29 AM,08/Oct/26 12:21 PM,08/Oct/26 12:06 PM,,,0,role-fullstack-engineer,"h2. Title
+
+Customer Self-Service Financial Vulnerability Intake and Interaction Freeze
+
+h2. User Story Statement
+
+As a customer experiencing financial hardship, illness, or vulnerability, I want to notify the company of my situation directly through the portal without facing aggressive payment demands, so that automated collections are immediately frozen and my account is routed to a trained specialist for compassionate handling.
+
+h2. Business Value
+
+Ensures compliance with FCA Consumer Duty, Vulnerable Customer guidance, and statutory Breathing Space regulations. Protects customers in distress and eliminates regulatory exposure.
+
+h2. Acceptance Criteria
+
+* Given an authenticated customer navigates the portal, when they click *Report Financial Vulnerability*, then the system displays a supportive, non-punitive intake screen acknowledging their situation without demanding immediate payment.
+* Given a customer submits a vulnerability notification, when processed, then automated collections and contact attempts are immediately paused for 30 days (*Breathing Space*).
+* Given the pause is applied, when committed, then the case is routed to Gareth's Vulnerable Customer Specialist queue with priority flagging, and audit records are written to Portal Metadata and Portal interaction history.
+* Given submission completion, when displayed, then the customer receives written confirmation, a pause reference number, and contact links to free independent debt advice charities (e.g., StepChange, National Debtline).
+
+h2. Dependencies
+
+* Account Summary Dashboard (KAN-5)
+* Dual-store audit logging (KAN-8)
+
+h2. Priority
+
+Highest / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 5 (Vulnerability Intake)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* Full-Stack Engineer
+* *Governance / Stakeholder Sign-Off Gates:* Daniel (Breathing Space compliance sign-off) & Gareth (specialist queue capacity)
+* *New Assumptions:*
+** 30-day Breathing Space pause duration is an assumption subject to policy confirmation with Daniel.
+** Gareth will confirm the *frontline collections triage queue* model/ownership for cases routed using these metadata flags (incl. vulnerability submissions).
+* *Scope & out-of-scope boundary:* Hardship assessment remains strictly human-led; the system halts automation and routes to specialists without attempting algorithmic debt write-offs or bespoke negotiations.
+* *ROI & workflow justification:* Essential regulatory safeguard. Eliminates legal/reputational risks and is a non-negotiable compliance requirement for launching Phase 1.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003m:,,,10026,KAN-18,Routing and exception handling,To Do,07/Oct/26 10:29 AM
+Automated Account Updates for Online Payments and Payment Promises,KAN-12,10020,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,High,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:29 AM,08/Oct/26 12:21 PM,08/Oct/26 12:05 PM,,,0,role-data-integration-engineer,"h2. Title
+
+Automated Synchronization of Payment Schedules to Legacy Collections Database (24h Sync)
+
+h2. User Story Statement
+
+As a systems integration lead, I want confirmed online payment plans and promises to pay synced to existing legacy collections databases within 24 hours, so that collections teams do not contact customers who have already arranged settlement online.
+
+h2. Business Value
+
+Maintains customer trust, prevents conflicting collections outreach, and eliminates manual spreadsheet data entry for over 2,400 staff hours per year.
+
+h2. Acceptance Criteria
+
+* Given an online promise-to-pay (KAN-20) or payment plan (KAN-6) is confirmed, when committed, then the agreement payload is staged with a *unique transaction reference ID*.
+* Given the automated daily sync pipeline executes, when run, then all confirmed records update the legacy collections database within the mandatory 24-hour SLA.
+* Given an active synced plan or promise in legacy databases, when periodic delinquency contact sweeps run, then automated collection outreach and calls are suppressed.
+* Given a network failure or data validation error during sync, when encountered, then the job routes the failed record to an *exception error log* with alerts triggered to IT Ops.
+
+h2. Dependencies
+
+* Digital Promise-to-Pay Setup (KAN-20)
+* Eligible Payment Plan Selection (KAN-6)
+* Legacy collections database API
+
+h2. Priority
+
+High / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 8 (Core DB Ingestion)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* Data / Integration Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Core Banking / IT Ops Lead (owner TBC)
+* *ROI & workflow justification:* Critical technical enabler. Without 24-hour sync, collections agents would contact customers who settled online, creating customer dissatisfaction and regulatory friction.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003n:d,,,10025,KAN-17,Promise-to-pay / payment plan journey,To Do,07/Oct/26 10:29 AM
+Management Portal Performance and Daily Outcome Reporting,KAN-13,10021,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:29 AM,08/Oct/26 12:21 PM,08/Oct/26 12:09 PM,,,0,role-bi-analytics-engineer,"h2. Title
+
+Management Portal Performance and Daily Outcome Reporting
+
+h2. User Story Statement
+
+As a collections operations manager, I want automated daily reporting on portal uptake and outcomes, so that I can track operational progress and evaluate performance against our ROI targets without manual spreadsheets.
+
+h2. Business Value
+
+Validates the £2.40M annual business case (£2.37M net revenue uplift and 2,400+ hours saved) and eliminates manual management spreadsheet reporting.
+
+h2. Acceptance Criteria (MVP)
+
+* Given operations management accesses portal reporting, when viewing the dashboard, then aggregate metrics from Portal Metadata display *daily volumetric progress counts*, including (at minimum) daily sessions, verifications, plan conversions, and promise-to-pay volumes.
+
+h2. Out of Scope (Deferred)
+
+* Conversion drop-off funnel / step-by-step drop-off stage analytics (deferred)
+* Automated export to CSV and PDF formats (deferred)
+
+h2. Dependencies
+
+* Dual-store audit logging (KAN-8)
+* Reporting data mart / BI aggregation pipeline
+
+h2. Priority
+
+Medium / Should-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 11 (Management Reports)
+* *Estimate:* 3 Story Points
+* *Proposed Assignee Role:* BI / Analytics Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Operations Management (owner TBC)
+* *Scope justification:* MVP focuses on the minimum daily volumetric reporting needed to demonstrate progress and adoption.
+* *Priority rationale:* Keep as *Should-Have* because data observability is secured at the data layer by KAN-8 (dual-store audit logging).",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003l:,,,10027,KAN-19,Reporting and audit trail,To Do,07/Oct/26 10:29 AM
+Inactivity Timeout and Unfinished Journey Safeguarding,KAN-14,10022,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,High,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:29 AM,08/Oct/26 12:21 PM,08/Oct/26 12:08 PM,,,0,role-frontend-security-engineer,"h2. Title
+
+Inactivity Timeout and Unfinished Journey Safeguarding
+
+h2. User Story Statement
+
+As a security and collections administrator, I want the portal to monitor inactivity, safely terminate idle sessions, and triage incomplete journeys conditionally, so that sensitive financial data is protected under UK GDPR without creating an unmanageable queue flood for staff.
+
+h2. Business Value
+
+Ensures customer financial privacy on shared devices, prevents unmonitored drop-offs, and shields staff from thousands of false-alarm queue tickets.
+
+h2. Acceptance Criteria
+
+* Given an active authenticated session, when no customer activity is detected for 13 minutes, then an accessible warning modal appears with a 2-minute countdown timer.
+* Given a session expires with no customer action taken (Early Exit / Bounce on login or summary screen), when timed out, then the session invalidates, local storage is purged, and *no staff task is generated*.
+* Given a session times out mid-transaction (customer started configuring a payment plan, promise date, or hardship declaration), when expired, then the session terminates safely and an {{ABANDONED_IN_FLIGHT}} flag is created.
+* Given an {{ABANDONED_IN_FLIGHT}} flag is created, then *collections/contact is temporarily paused with a 48-hour temporary contact suppression*, and a follow-up task is routed to the frontline triage queue for review.
+
+h2. Dependencies
+
+* Frontend session timer
+* Dual-store audit logging (KAN-8)
+
+h2. Priority
+
+High / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 6 (Session Timeout)
+* *Estimate:* 3 Story Points
+* *Proposed Assignee Role:* Frontend / Security Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Gareth (refined conditional triage queue rules agreement)
+* *New Assumption:* Gareth will confirm the operating model for the *frontline triage queue* and ownership/coverage for {{ABANDONED_IN_FLIGHT}} reviews.
+* *Scope justification:* Mandatory technical enabler under UK GDPR data protection principles to prevent PII exposure on shared/public devices.
+* *Queue flood mitigation:* Restricting staff escalations strictly to mid-journey abandonment prevents overwhelming Gareth's team.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003n:,,,10026,KAN-18,Routing and exception handling,To Do,07/Oct/26 10:29 AM
+Specialist Case Review Screen with Customer Journey Summary,KAN-15,10023,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:29 AM,08/Oct/26 12:21 PM,08/Oct/26 12:08 PM,,,0,role-crm-ui-engineer,"h2. Title
+
+Specialist Handoff Summary Screen
+
+h2. User Story Statement
+
+As a collections specialist receiving a referred, disputed, or timed-out account, I want to view a concise customer journey summary showing referral reasons and prior portal steps, so that I have full context immediately and customers do not have to repeat their circumstances.
+
+h2. Business Value
+
+Reduces Average Handle Time (AHT), drives frontline staff adoption (ADKAR change enablement), and improves customer experience during vulnerable handoffs.
+
+h2. Acceptance Criteria
+
+* Given an account is routed to a specialist (via failed verification, hardship freeze, mid-transaction timeout, or dispute), when the specialist opens the case, then the screen displays the transfer reason, attempt counts, and a clear summary of steps visited.
+* Given a specialist reviews the summary, when interacting with the customer, then standard security verification questions and pre-composed outreach templates are available.
+* Given the specialist cannot resolve the customer's inquiry through standard tools, when needed, then the specialist can escalate the case to senior recovery or legal management.
+
+h2. Fallback / Slip Handling (MVP)
+
+* If delivery of this screen (KAN-15) slips, then *specialists will continue triage via the existing legacy CRM queue* using *metadata flags* and the *KAN-8 dual-store audit logs* as the source of journey context until the screen is delivered.
+
+h2. Dependencies
+
+* Dual-store audit logging (KAN-8)
+* Triage and exception routing (KAN-7, KAN-11, KAN-14)
+
+h2. Priority
+
+Medium / Should-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 7 (Staff Handoff)
+* *Estimate:* 5 Story Points
+* *Proposed Assignee Role:* CRM / UI Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Gareth (frontline workflow adoption & queue layout sign-off)
+* *Scope justification:* Handoff summary only. Full granular clickstream event history remains strictly deferred to Phase 2; this Phase 1 briefing card ensures frontline staff do not force vulnerable customers to repeat sensitive details.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003n:i,,,10026,KAN-18,Routing and exception handling,To Do,07/Oct/26 10:29 AM
+Account visibility,KAN-16,10024,Epic,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:36 AM,08/Oct/26 11:18 AM,,,,0,,"Customer Self-Service Collections Portal providing transparent, up-to-date cleared balance visibility, self-service resolution options, and seamless staff escalation pathways.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0004z:,,,,,,To Do,07/Oct/26 10:36 AM
+Promise-to-pay / payment plan journey,KAN-17,10025,Epic,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:36 AM,07/Oct/26 10:36 AM,,,,0,,"Enable automated payment plan presentation, selection, and digital promise-to-pay capture.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i00055:,,,,,,To Do,07/Oct/26 10:36 AM
+Routing and exception handling,KAN-18,10026,Epic,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:36 AM,07/Oct/26 10:36 AM,,,,0,,"Automate rules-based contact triage, representative escalation, and session timeout management.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0005i:,,,,,,To Do,07/Oct/26 10:36 AM
+Reporting and audit trail,KAN-19,10027,Epic,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,Medium,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,07/Oct/26 10:36 AM,07/Oct/26 10:36 AM,,,,0,,"Capture comprehensive portal metadata, interaction audit trails, reconciliation feeds, and management analytics.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0005n:,,,,,,To Do,07/Oct/26 10:36 AM
+Digital Promise-to-Pay Setup,KAN-20,10028,Task,To Do,KAN,Legacy Trust Backlog,software,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,High,,,,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,08/Oct/26 11:20 AM,08/Oct/26 12:21 PM,08/Oct/26 12:04 PM,,,0,role-fullstack-engineer,"h2. Title
+
+Digital Promise-to-Pay Setup
+
+h2. User Story Statement
+
+As a customer facing short-term cash flow constraints, I want to select and commit to a single future date to pay my overdue balance, so that I can resolve my arrears on payday without phone calls or invasive affordability checks.
+
+h2. Business Value
+
+Delivers the 2.5% promise-to-pay recovery uplift in the £2.37M revenue business case and deflects routine promise calls (12.08% of sample account interactions).
+
+h2. Acceptance Criteria
+
+* Given an eligible customer chooses *Promise to Pay*, when the screen displays, then an interactive calendar selector allows choosing a future settlement date *strictly capped at 30 calendar days (no exceptions)*.
+* Given a selected payment date, when reviewed, then clear terms and consequences of broken promises are displayed.
+* Given a customer confirms their promise date, when submitted, then the system generates an instant timestamped digital receipt and triggers automated confirmation via SMS and Email.
+* Given a confirmed promise is created, then *a scheduled reminder is sent 48 hours prior to the due date* (SMS/Email as per comms policy wording).
+* Given a confirmed promise, when created, then collections actions are paused until the promised date, and the promise record feeds into the 24h sync pipeline (KAN-12).
+
+h2. Dependencies
+
+* Account Summary Dashboard (KAN-5)
+* Automated 24h Sync (KAN-12)
+* Dual-store audit logging (KAN-8)
+
+h2. Priority
+
+High / Must-Have
+
+h2. Notes & Assumptions
+
+* *To-Be Workflow Step:* Step 4a (Promise-to-Pay Capture)
+* *Estimate:* 3 Story Points
+* *Proposed Assignee Role:* Full-Stack Engineer
+* *Governance / Stakeholder Sign-Off Gate:* Daniel (compliance sign-off on promise disclaimer and reminder wording)
+* *New Assumption:* Daniel will confirm/approve the final promise-to-pay cap wording and 48-hour reminder content as compliant.
+* *ROI & workflow justification:* Direct driver of cash acceleration for short-term liquidity arrears, providing frictionless self-service resolution.",,Heather Shepherd,712020:86015c84-9eea-42e2-a78b-9a28bc402561,,,,,,,,,{},,0|i0003n:9,,,10025,KAN-17,Promise-to-pay / payment plan journey,To Do,08/Oct/26 11:20 AM

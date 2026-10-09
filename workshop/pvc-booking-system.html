@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PVC Appointment Booking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 0.95em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .screen-title {
+            font-size: 1.6em;
+            color: #333;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.95em;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            min-width: 130px;
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex-grow: 2;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #667eea;
+            text-decoration: underline;
+            padding: 0;
+            min-width: auto;
+            font-size: 0.95em;
+            cursor: pointer;
+            flex: none;
+        }
+
+        .btn-text:hover {
+            color: #764ba2;
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .link-text button {
+            all: unset;
+            color: #667eea;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 600;
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-text button:hover {
+            color: #764ba2;
+        }
+
+        .success-message {
+            background: #e0f7e0;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2e7d32;
+        }
+
+        .error-message {
+            background: #ffe0e0;
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #d32f2f;
+        }
+
+        .info-box {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .info-box p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .user-greeting {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .user-greeting h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .user-greeting p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .appointment-card {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .appointment-card h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .appointment-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.95em;
+            color: #666;
+        }
+
+        .appointment-detail strong {
+            color: #333;
+        }
+
+        .time-slot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .time-slot {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+
+        .time-slot:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .time-slot.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .welcome-content {
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .site-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .site-card {
+            background: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-family: inherit;
+            padding: 25px;
+        }
+
+        .site-card:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .site-card:active {
+            transform: translateY(-2px);
+        }
+
+        .site-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .site-details {
+            font-size: 0.85em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .welcome-content h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .welcome-content p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .features-list {
+            text-align: left;
+            display: inline-block;
+            color: #666;
+            margin: 20px 0;
+        }
+
+        .features-list li {
+            margin-bottom: 10px;
+            list-style: none;
+        }
+
+        .features-list li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+
+            .screen-title {
+                font-size: 1.3em;
+            }
+
+            button {
+                min-width: 110px;
+                padding: 10px 18px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐾 Pritzki Veterinary Clinic</h1>
+            <p>Book Your Pet's Appointment</p>
+        </div>
+
+        <div class="content">
+            <!-- Screen 1: Landing Page -->
+            <div class="screen active" id="landing-screen">
+                <div class="welcome-content">
+                    <div class="welcome-icon">👋</div>
+                    <h2>Welcome to Pritzki Veterinary Clinic</h2>
+                    <p>Book your pet's appointment online in just a few clicks</p>
+                    
+                    <ul class="features-list">
+                        <li>Easy online booking</li>
+                        <li>Choose your preferred time slot</li>
+                        <li>Manage your pet's health records</li>
+                        <li>Receive appointment reminders</li>
+                    </ul>
+
+                    <div class="button-group" style="margin-top: 35px;">
+                        <button class="btn-primary" onclick="showLogin()">Login</button>
+                        <button class="btn-secondary" onclick="showRegister()">Register</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Register -->
+            <div class="screen" id="register-screen">
+                <div class="screen-title">Create Your Account</div>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Phone Number</label>
+                        <input type="tel" id="reg-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" required oninput="checkPasswordStrength()">
+                        <div id="password-requirements" style="font-size: 0.85em; margin-top: 8px; color: #666;">
+                            <div style="margin-bottom: 5px;"><strong>Password must contain:</strong></div>
+                            <div id="req-length" style="margin-bottom: 3px;">❌ At least 8 characters</div>
+                            <div id="req-upper" style="margin-bottom: 3px;">❌ At least one uppercase letter</div>
+                            <div id="req-lower" style="margin-bottom: 3px;">❌ At least one lowercase letter</div>
+                            <div id="req-number" style="margin-bottom: 3px;">❌ At least one number</div>
+                            <div id="req-special" style="margin-bottom: 3px;">❌ At least one special character (!@#$%^&*)</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password-confirm">Confirm Password</label>
+                        <input type="password" id="reg-password-confirm" required>
+                    </div>
+                    <div id="register-message"></div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Create Account</button>
+                        <button type="button" class="btn-secondary" onclick="showLanding()">Back</button>
+                    </div>
+                </form>
+                <div class="link-text">
+                    Already have an account? <button onclick="showLogin()">Login here</button>
+                </div>
+            </div>
+
+            <!-- Screen 3: Login -->
+            <div class="screen" id="login-screen">
+                <div class="screen-title">Login to Your Account</div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <div id="login-message"></div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Login</button>
+                        <button type="button" class="btn-secondary" onclick="showLanding()">Back</button>
+                    </div>
+                </form>
+                <div class="info-box" style="margin-top: 25px; background: #f0f7ff; border-left-color: #667eea;">
+                    <h3 style="color: #333; font-size: 0.95em; margin-bottom: 12px;">📝 Test Accounts</h3>
+                    <div style="font-size: 0.85em; color: #666; line-height: 1.8;">
+                        <strong>Account 1:</strong><br>
+                        Email: sarah.johnson@email.com<br>
+                        Password: SecurePass123!<br><br>
+                        <strong>Account 2:</strong><br>
+                        Email: emily.chen@email.com<br>
+                        Password: MyPassword456@<br><br>
+                        <strong>Account 3:</strong><br>
+                        Email: michael.rodriguez@email.com<br>
+                        Password: Strong#Pass789
+                    </div>
+                </div>
+                <div class="link-text">
+                    <button onclick="showForgotPassword()">Forgot your password?</button>
+                </div>
+                <div class="link-text">
+                    Don't have an account? <button onclick="showRegister()">Register here</button>
+                </div>
+            </div>
+
+            <!-- Screen 4: Manage Pets -->
+            <div class="screen" id="manage-pets-screen">
+                <div class="screen-title">Manage Your Pets</div>
+                <div id="pets-management-container" style="margin-bottom: 25px;">
+                    <!-- Pets will be populated here -->
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="showAddPetFromManage()">➕ Add New Pet</button>
+                    <button class="btn-secondary" onclick="showAccount()">Back to Account</button>
+                </div>
+            </div>
+
+            <!-- Screen 5: Add Pet Information -->
+            <div class="screen" id="add-pet-screen">
+                <div class="screen-title">Tell Us About Your Pet</div>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    Help us provide the best care by adding your pet's information
+                </p>
+                <form onsubmit="handleAddPet(event)">
+                    <div class="form-group">
+                        <label for="pet-name">Pet Name</label>
+                        <input type="text" id="pet-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet-species">Species</label>
+                        <select id="pet-species" required onchange="updateBreeds()">
+                            <option value="">Select species...</option>
+                            <option value="dog">Dog</option>
+                            <option value="cat">Cat</option>
+                            <option value="rabbit">Rabbit</option>
+                            <option value="bird">Bird</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet-breed">Breed</label>
+                        <input type="text" id="pet-breed" placeholder="e.g. Golden Retriever" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet-age">Age (Years)</label>
+                        <input type="number" id="pet-age" min="0" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet-weight">Weight (kg)</label>
+                        <input type="number" id="pet-weight" min="0" step="0.1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet-microchip">Microchip Number (Optional)</label>
+                        <input type="text" id="pet-microchip" placeholder="If available">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pet-notes">Medical Notes (Optional)</label>
+                        <textarea id="pet-notes" rows="3" placeholder="Allergies, medications, health conditions..."></textarea>
+                    </div>
+
+                    <div id="pet-message"></div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Add Pet</button>
+                    </div>
+                </form>
+                <div class="link-text">
+                    <button onclick="skipAddPet()">Skip for now</button>
+                </div>
+            </div>
+
+            <!-- Screen 5: Forgot Password -->
+            <div class="screen" id="forgot-password-screen">
+                <div class="screen-title">Reset Your Password</div>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">
+                    Enter your email address and we'll send you instructions to reset your password.
+                </p>
+                <form onsubmit="handleForgotPassword(event)">
+                    <div class="form-group">
+                        <label for="reset-email">Email Address</label>
+                        <input type="email" id="reset-email" required>
+                    </div>
+                    <div id="reset-message"></div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Send Reset Link</button>
+                        <button type="button" class="btn-secondary" onclick="showLogin()">Back to Login</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Screen 6: Account Homepage -->
+            <div class="screen" id="account-screen">
+                <div class="user-greeting">
+                    <h2>Welcome back, <span id="user-name"></span>! 👋</h2>
+                    <p>Manage your appointments and pet information</p>
+                </div>
+
+                <div class="info-box">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">Your Pets</h3>
+                        <button class="btn-text" onclick="showManagePets()" style="padding: 5px 10px; font-size: 0.9em; text-decoration: none; border: 2px solid #667eea; border-radius: 6px; background: #f0f4ff;">➕ Manage Pets</button>
+                    </div>
+                    <div id="pets-list" style="line-height: 1.8;">
+                        <p>No pets added yet. <button class="btn-text" onclick="showManagePets()">Add a pet now</button></p>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">Upcoming Appointments</h3>
+                    <div id="appointments-container">
+                        <p style="color: #999; text-align: center; padding: 20px;">No upcoming appointments. <button class="btn-text" onclick="showBooking()">Book one now!</button></p>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="showBooking()">Book New Appointment</button>
+                    <button class="btn-secondary" onclick="handleLogout()">Logout</button>
+                </div>
+            </div>
+
+            <!-- Screen 7: Site Selection for Booking -->
+            <div class="screen" id="site-booking-screen">
+                <div class="screen-title">Select Your Preferred Clinic</div>
+                <p style="text-align: center; color: #666; margin-bottom: 30px;">
+                    Choose the location for your appointment
+                </p>
+                <div class="site-grid">
+                    <button type="button" class="site-card" onclick="selectSiteForBooking('preston')">
+                        <div class="site-name">Preston</div>
+                        <div class="site-details">Main clinic<br>📍 City centre<br>☎️ 01772 456123</div>
+                    </button>
+                    <button type="button" class="site-card" onclick="selectSiteForBooking('blackpool')">
+                        <div class="site-name">Blackpool</div>
+                        <div class="site-details">Coastal clinic<br>📍 North Shore<br>☎️ 01253 789456</div>
+                    </button>
+                    <button type="button" class="site-card" onclick="selectSiteForBooking('manchester')">
+                        <div class="site-name">Manchester</div>
+                        <div class="site-details">Regional clinic<br>📍 City West<br>☎️ 0161 234 5678</div>
+                    </button>
+                </div>
+                <div class="button-group" style="margin-top: 30px;">
+                    <button type="button" class="btn-secondary" onclick="showAccount()">Cancel</button>
+                </div>
+            </div>
+
+            <!-- Screen 8: Appointment Booking -->
+            <div class="screen" id="booking-screen">
+                <div class="screen-title">Book an Appointment</div>
+                <div style="background: #f0f4ff; padding: 12px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+                    <strong style="color: #667eea;">Selected Location:</strong> <span id="selected-site-display">Preston</span>
+                </div>
+                <form onsubmit="handleBooking(event)">
+                    <div class="form-group">
+                        <label for="booking-pet">Select Your Pet</label>
+                        <select id="booking-pet" required>
+                            <option value="">Choose a pet...</option>
+                            <option value="max">Max (Golden Retriever)</option>
+                            <option value="buddy">Buddy (Labrador Mix)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="booking-reason">Reason for Visit</label>
+                        <select id="booking-reason" required>
+                            <option value="">Select reason...</option>
+                            <option value="checkup">Annual Checkup</option>
+                            <option value="vaccination">Vaccination</option>
+                            <option value="dental">Dental Cleaning</option>
+                            <option value="illness">Illness Treatment</option>
+                            <option value="follow-up">Follow-up Visit</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="booking-date">Preferred Date</label>
+                        <input type="date" id="booking-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="booking-vet">Preferred Veterinarian (Optional)</label>
+                        <select id="booking-vet">
+                            <option value="">Any available vet</option>
+                        </select>
+                        <div id="vet-specialties" style="font-size: 0.85em; color: #666; margin-top: 8px;"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Available Time Slots</label>
+                        <div class="time-slot-grid" id="time-slots-container">
+                            <button type="button" class="time-slot" onclick="selectTimeSlot(this)">9:00 AM</button>
+                            <button type="button" class="time-slot" onclick="selectTimeSlot(this)">10:00 AM</button>
+                            <button type="button" class="time-slot" onclick="selectTimeSlot(this)">11:00 AM</button>
+                            <button type="button" class="time-slot" onclick="selectTimeSlot(this)">2:00 PM</button>
+                            <button type="button" class="time-slot" onclick="selectTimeSlot(this)">3:00 PM</button>
+                            <button type="button" class="time-slot" onclick="selectTimeSlot(this)">4:00 PM</button>
+                        </div>
+                        <input type="hidden" id="selected-time-slot">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="booking-notes">Additional Notes (Optional)</label>
+                        <textarea id="booking-notes" rows="3" placeholder="Any special requirements or concerns..."></textarea>
+                    </div>
+
+                    <div class="form-group" style="background: #fff9e6; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                        <label style="display: flex; align-items: center; cursor: pointer; font-weight: 600; color: #333; margin-bottom: 0;">
+                            <input type="checkbox" id="booking-urgent" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
+                            🚨 This is an urgent appointment
+                        </label>
+                        <div style="font-size: 0.85em; color: #666; margin-top: 8px; margin-left: 28px;">
+                            Mark this if your pet requires immediate care or is in distress
+                        </div>
+                    </div>
+
+                    <div id="booking-message"></div>
+                    <div class="button-group">
+                        <button type="submit" class="btn-primary">Confirm Booking</button>
+                        <button type="button" class="btn-secondary" onclick="showAccount()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let userPets = [];
+        let userAppointments = [];
+        let selectedSiteForBooking = null;
+
+        // Site availability data
+        const siteAvailability = {
+            'preston': ['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM'],
+            'blackpool': ['9:30 AM', '10:30 AM', '1:00 PM', '2:30 PM', '3:30 PM'],
+            'manchester': ['8:00 AM', '9:00 AM', '10:00 AM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM']
+        };
+
+        // Veterinarians at each site
+        const siteVets = {
+            'preston': [
+                { name: 'Dr. Amanda Mitchell', specialty: 'Small Animals' },
+                { name: 'Dr. Michael Chen', specialty: 'Surgery' },
+                { name: 'Dr. Sarah Thompson', specialty: 'Dental Care' }
+            ],
+            'blackpool': [
+                { name: 'Dr. James Wilson', specialty: 'General Practice' },
+                { name: 'Dr. Emma Davies', specialty: 'Exotics' },
+                { name: 'Dr. Robert Hayes', specialty: 'Geriatric Care' }
+            ],
+            'manchester': [
+                { name: 'Dr. Priya Patel', specialty: 'Small Animals' },
+                { name: 'Dr. Alex Johnson', specialty: 'Behavioural' },
+                { name: 'Dr. Lisa O\'Brien', specialty: 'Nutrition' }
+            ]
+        };
+
+        // Existing customer accounts for testing
+        const existingUsers = {
+            'sarah.johnson@email.com': {
+                password: 'SecurePass123!',
+                name: 'Sarah Johnson',
+                phone: '01772 456123',
+                pets: [
+                    { name: 'Max', breed: 'Golden Retriever', species: 'dog', age: 5, weight: 32, microchip: 'GB123456789', notes: 'Friendly and energetic' },
+                    { name: 'Luna', breed: 'Siamese Cat', species: 'cat', age: 3, weight: 4.2, microchip: 'GB987654321', notes: 'Indoor cat, sensitive to stress' }
+                ],
+                appointments: [
+                    {
+                        pet: 'Max',
+                        reason: 'Annual Checkup',
+                        date: 'Saturday, 12 Oct 2024',
+                        time: '2:30 PM',
+                        vet: 'Dr. Amanda Mitchell',
+                        location: 'Preston',
+                        notes: 'Routine checkup and vaccinations'
+                    }
+                ]
+            },
+            'emily.chen@email.com': {
+                password: 'MyPassword456@',
+                name: 'Emily Chen',
+                phone: '0121 234 5678',
+                pets: [
+                    { name: 'Whiskers', breed: 'Maine Coon', species: 'cat', age: 2, weight: 6.5, microchip: '', notes: 'Very playful, needs enrichment' }
+                ],
+                appointments: [
+                    {
+                        pet: 'Whiskers',
+                        reason: 'Vaccination Booster',
+                        date: 'Tuesday, 15 Oct 2024',
+                        time: '3:15 PM',
+                        vet: 'Dr. James Wilson',
+                        location: 'Blackpool',
+                        notes: 'Annual booster shots due'
+                    },
+                    {
+                        pet: 'Whiskers',
+                        reason: 'Dental Cleaning',
+                        date: 'Thursday, 24 Oct 2024',
+                        time: '10:00 AM',
+                        vet: 'Dr. Sarah Thompson',
+                        location: 'Preston',
+                        notes: 'Professional cleaning recommended'
+                    }
+                ]
+            },
+            'michael.rodriguez@email.com': {
+                password: 'Strong#Pass789',
+                name: 'Michael Rodriguez',
+                phone: '0131 555 1234',
+                pets: [
+                    { name: 'Buddy', breed: 'Labrador Mix', species: 'dog', age: 7, weight: 28, microchip: 'GB555666777', notes: 'Senior dog, regular checkups important' }
+                ],
+                appointments: []
+            }
+        };
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function showLanding() {
+            switchScreen('landing-screen');
+            clearMessages();
+        }
+
+        function showRegister() {
+            switchScreen('register-screen');
+            clearMessages();
+            clearFormInputs(['reg-name', 'reg-email', 'reg-phone', 'reg-password', 'reg-password-confirm']);
+        }
+
+        function showLogin() {
+            switchScreen('login-screen');
+            clearMessages();
+            clearFormInputs(['login-email', 'login-password']);
+        }
+
+        function showForgotPassword() {
+            switchScreen('forgot-password-screen');
+            clearMessages();
+            clearFormInputs(['reset-email']);
+        }
+
+        function showAccount() {
+            if (!currentUser) {
+                showLogin();
+                return;
+            }
+            document.getElementById('user-name').textContent = currentUser.name;
+            
+            // Display pets
+            const petsList = document.getElementById('pets-list');
+            if (userPets.length === 0) {
+                petsList.innerHTML = '<p>No pets added yet. <button class="btn-text" onclick="showManagePets()">Add a pet now</button></p>';
+            } else {
+                petsList.innerHTML = '';
+                userPets.forEach(pet => {
+                    const petItem = document.createElement('div');
+                    petItem.style.cssText = 'background: #f9f9f9; padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #667eea;';
+                    petItem.innerHTML = `
+                        <div style="font-weight: 600; color: #333; margin-bottom: 5px;">${pet.name}</div>
+                        <div style="font-size: 0.9em; color: #666;">🐾 ${pet.breed} • ${pet.age} years • ${pet.weight} kg</div>
+                    `;
+                    petsList.appendChild(petItem);
+                });
+            }
+            
+            // Display appointments
+            const appointmentsContainer = document.getElementById('appointments-container');
+            if (userAppointments.length === 0) {
+                appointmentsContainer.innerHTML = '<p style="color: #999; text-align: center; padding: 20px;">No upcoming appointments. <button class="btn-text" onclick="showBooking()">Book one now!</button></p>';
+            } else {
+                appointmentsContainer.innerHTML = '';
+                userAppointments.forEach(apt => {
+                    const card = document.createElement('div');
+                    card.className = 'appointment-card';
+                    const urgentIndicator = apt.urgent ? '<div style="background: #ffe0e0; color: #d32f2f; padding: 10px; border-radius: 6px; margin-bottom: 15px; font-weight: 600; text-align: center;">🚨 URGENT APPOINTMENT</div>' : '';
+                    const cardStyle = apt.urgent ? 'background: #fff9f9; border-left-color: #ff6b6b;' : '';
+                    card.style.cssText = cardStyle;
+                    card.innerHTML = `
+                        ${urgentIndicator}
+                        <h4>${apt.pet} - ${apt.reason}</h4>
+                        <div class="appointment-detail">
+                            <strong>Date & Time:</strong>
+                            <span>${apt.date} at ${apt.time}</span>
+                        </div>
+                        <div class="appointment-detail">
+                            <strong>Location:</strong>
+                            <span>${apt.location || 'Preston'} Clinic</span>
+                        </div>
+                        <div class="appointment-detail">
+                            <strong>Veterinarian:</strong>
+                            <span>${apt.vet}</span>
+                        </div>
+                        <div class="appointment-detail">
+                            <strong>Notes:</strong>
+                            <span>${apt.notes || 'None'}</span>
+                        </div>
+                    `;
+                    appointmentsContainer.appendChild(card);
+                });
+            }
+            
+            switchScreen('account-screen');
+            clearMessages();
+        }
+
+        function showBooking() {
+            switchScreen('site-booking-screen');
+            clearMessages();
+        }
+
+        function selectSiteForBooking(site) {
+            selectedSiteForBooking = site;
+            const siteNames = {
+                'preston': 'Preston',
+                'blackpool': 'Blackpool',
+                'manchester': 'Manchester'
+            };
+            document.getElementById('selected-site-display').textContent = siteNames[site];
+            updateTimeSlots(site);
+            switchScreen('booking-screen');
+            clearMessages();
+            clearFormInputs(['booking-pet', 'booking-reason', 'booking-date', 'booking-notes']);
+        }
+
+        function updateTimeSlots(site) {
+            const slots = siteAvailability[site] || [];
+            const container = document.getElementById('time-slots-container');
+            container.innerHTML = '';
+            slots.forEach(time => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'time-slot';
+                btn.textContent = time;
+                btn.onclick = function(e) { e.preventDefault(); selectTimeSlot(this); };
+                container.appendChild(btn);
+            });
+
+            // Update vet dropdown
+            updateVetOptions(site);
+        }
+
+        function updateVetOptions(site) {
+            const vets = siteVets[site] || [];
+            const vetSelect = document.getElementById('booking-vet');
+            vetSelect.innerHTML = '<option value="">Any available vet</option>';
+            vets.forEach(vet => {
+                const option = document.createElement('option');
+                option.value = vet.name;
+                option.textContent = vet.name + ' (' + vet.specialty + ')';
+                vetSelect.appendChild(option);
+            });
+
+            // Add change listener to show specialty
+            vetSelect.onchange = function() {
+                const selectedVet = vetSelect.value;
+                const specialtyDiv = document.getElementById('vet-specialties');
+                if (selectedVet) {
+                    const vet = vets.find(v => v.name === selectedVet);
+                    if (vet) {
+                        specialtyDiv.textContent = '🔹 Specialty: ' + vet.specialty;
+                    }
+                } else {
+                    specialtyDiv.textContent = '';
+                }
+            };
+        }
+
+        function showAddPet() {
+            switchScreen('add-pet-screen');
+            clearMessages();
+            clearFormInputs(['pet-name', 'pet-species', 'pet-breed', 'pet-age', 'pet-weight', 'pet-microchip', 'pet-notes']);
+        }
+
+        function showManagePets() {
+            switchScreen('manage-pets-screen');
+            displayManagedPets();
+        }
+
+        function showAddPetFromManage() {
+            switchScreen('add-pet-screen');
+            clearMessages();
+            clearFormInputs(['pet-name', 'pet-species', 'pet-breed', 'pet-age', 'pet-weight', 'pet-microchip', 'pet-notes']);
+        }
+
+        function displayManagedPets() {
+            const container = document.getElementById('pets-management-container');
+            
+            if (userPets.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #999; padding: 30px;">No pets added yet. Click "Add New Pet" to get started!</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            userPets.forEach((pet, index) => {
+                const card = document.createElement('div');
+                card.className = 'appointment-card';
+                card.style.cssText = 'background: #f9f9f9; border-left-color: #667eea;';
+                card.innerHTML = `
+                    <h4>${pet.name} <span style="color: #999; font-size: 0.85em; font-weight: normal;">${pet.breed}</span></h4>
+                    <div class="appointment-detail">
+                        <strong>Species:</strong>
+                        <span>${pet.species}</span>
+                    </div>
+                    <div class="appointment-detail">
+                        <strong>Age:</strong>
+                        <span>${pet.age} years</span>
+                    </div>
+                    <div class="appointment-detail">
+                        <strong>Weight:</strong>
+                        <span>${pet.weight} kg</span>
+                    </div>
+                    ${pet.microchip ? `
+                    <div class="appointment-detail">
+                        <strong>Microchip:</strong>
+                        <span>${pet.microchip}</span>
+                    </div>
+                    ` : ''}
+                    ${pet.notes ? `
+                    <div class="appointment-detail">
+                        <strong>Medical Notes:</strong>
+                        <span>${pet.notes}</span>
+                    </div>
+                    ` : ''}
+                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
+                        <button type="button" class="btn-secondary" style="flex: none; padding: 8px 15px; font-size: 0.9em; min-width: 100px;" onclick="removePet(${index})">🗑️ Remove</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function removePet(index) {
+            if (confirm('Are you sure you want to remove ' + userPets[index].name + '?')) {
+                userPets.splice(index, 1);
+                displayManagedPets();
+            }
+        }
+
+        function updateBreeds() {
+            const species = document.getElementById('pet-species').value;
+            const breedInput = document.getElementById('pet-breed');
+            const breeds = {
+                'dog': 'e.g. Golden Retriever, Labrador, German Shepherd',
+                'cat': 'e.g. Persian, Siamese, Maine Coon',
+                'rabbit': 'e.g. Holland Lop, Rex, Angora',
+                'bird': 'e.g. Parrot, Canary, Budgie',
+                'other': 'Please specify the breed'
+            };
+            breedInput.placeholder = breeds[species] || 'Enter breed';
+        }
+
+        function handleAddPet(e) {
+            e.preventDefault();
+            const petName = document.getElementById('pet-name').value;
+            const petSpecies = document.getElementById('pet-species').value;
+            const petBreed = document.getElementById('pet-breed').value;
+            const petAge = document.getElementById('pet-age').value;
+            const petWeight = document.getElementById('pet-weight').value;
+            const petMicrochip = document.getElementById('pet-microchip').value;
+            const petNotes = document.getElementById('pet-notes').value;
+            const messageDiv = document.getElementById('pet-message');
+
+            const pet = {
+                name: petName,
+                species: petSpecies,
+                breed: petBreed,
+                age: parseFloat(petAge),
+                weight: parseFloat(petWeight),
+                microchip: petMicrochip,
+                notes: petNotes
+            };
+
+            userPets.push(pet);
+            updatePetDropdown();
+
+            messageDiv.innerHTML = '<div class="success-message">' + petName + ' added successfully!</div>';
+            
+            // Redirect based on context
+            const previousScreen = document.querySelector('.screen.active')?.id;
+            if (previousScreen === 'manage-pets-screen' || document.getElementById('manage-pets-screen').style.display !== 'none') {
+                setTimeout(() => showManagePets(), 1500);
+            } else {
+                setTimeout(() => showAccount(), 1500);
+            }
+        }
+
+        function skipAddPet() {
+            showAccount();
+        }
+
+        function updatePetDropdown() {
+            const petSelect = document.getElementById('booking-pet');
+            petSelect.innerHTML = '<option value="">Choose a pet...</option>';
+            userPets.forEach((pet, index) => {
+                const option = document.createElement('option');
+                option.value = pet.name;
+                option.textContent = pet.name + ' (' + pet.breed + ')';
+                petSelect.appendChild(option);
+            });
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('reg-password').value;
+            
+            const requirements = {
+                length: password.length >= 8,
+                upper: /[A-Z]/.test(password),
+                lower: /[a-z]/.test(password),
+                number: /\d/.test(password),
+                special: /[!@#$%^&*]/.test(password)
+            };
+
+            document.getElementById('req-length').innerHTML = (requirements.length ? '✅' : '❌') + ' At least 8 characters';
+            document.getElementById('req-upper').innerHTML = (requirements.upper ? '✅' : '❌') + ' At least one uppercase letter';
+            document.getElementById('req-lower').innerHTML = (requirements.lower ? '✅' : '❌') + ' At least one lowercase letter';
+            document.getElementById('req-number').innerHTML = (requirements.number ? '✅' : '❌') + ' At least one number';
+            document.getElementById('req-special').innerHTML = (requirements.special ? '✅' : '❌') + ' At least one special character (!@#$%^&*)';
+
+            return Object.values(requirements).every(req => req);
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value;
+            const phone = document.getElementById('reg-phone').value;
+            const password = document.getElementById('reg-password').value;
+            const passwordConfirm = document.getElementById('reg-password-confirm').value;
+            const messageDiv = document.getElementById('register-message');
+
+            if (!checkPasswordStrength()) {
+                messageDiv.innerHTML = '<div class="error-message">Password does not meet the required criteria</div>';
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                messageDiv.innerHTML = '<div class="error-message">Passwords do not match</div>';
+                return;
+            }
+
+            currentUser = { name, email, phone, password };
+            messageDiv.innerHTML = '<div class="success-message">Account created successfully! Now tell us about your pet...</div>';
+            setTimeout(() => showAddPet(), 1500);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const messageDiv = document.getElementById('login-message');
+
+            // Check existing users first
+            if (existingUsers[email] && existingUsers[email].password === password) {
+                const userData = existingUsers[email];
+                currentUser = { email, name: userData.name, phone: userData.phone };
+                userPets = userData.pets;
+                userAppointments = userData.appointments;
+                messageDiv.innerHTML = '<div class="success-message">Login successful! Redirecting...</div>';
+                setTimeout(() => showAccount(), 1500);
+            } else if (currentUser && currentUser.email === email && currentUser.password === password) {
+                messageDiv.innerHTML = '<div class="success-message">Login successful! Redirecting...</div>';
+                setTimeout(() => showAccount(), 1500);
+            } else {
+                messageDiv.innerHTML = '<div class="error-message">Invalid email or password</div>';
+            }
+        }
+
+        function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value;
+            const messageDiv = document.getElementById('reset-message');
+
+            messageDiv.innerHTML = '<div class="success-message">Password reset link sent to ' + email + '. Check your email for instructions.</div>';
+            setTimeout(() => showLogin(), 3000);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            showLanding();
+        }
+
+        function selectTimeSlot(element) {
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            document.getElementById('selected-time-slot').value = element.textContent;
+        }
+
+        function handleBooking(e) {
+            e.preventDefault();
+            const pet = document.getElementById('booking-pet').value;
+            const reason = document.getElementById('booking-reason').value;
+            const date = document.getElementById('booking-date').value;
+            const timeSlot = document.getElementById('selected-time-slot').value;
+            const vet = document.getElementById('booking-vet').value;
+            const notes = document.getElementById('booking-notes').value;
+            const isUrgent = document.getElementById('booking-urgent').checked;
+            const messageDiv = document.getElementById('booking-message');
+
+            if (!timeSlot) {
+                messageDiv.innerHTML = '<div class="error-message">Please select a time slot</div>';
+                return;
+            }
+
+            // Add appointment to user's appointments
+            const reasonLabels = {
+                'checkup': 'Annual Checkup',
+                'vaccination': 'Vaccination',
+                'dental': 'Dental Cleaning',
+                'illness': 'Illness Treatment',
+                'follow-up': 'Follow-up Visit',
+                'other': 'Other'
+            };
+
+            const appointment = {
+                pet: pet,
+                reason: reasonLabels[reason] || reason,
+                date: new Date(date).toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' }),
+                time: timeSlot,
+                vet: vet || 'Any available vet',
+                location: selectedSiteForBooking.charAt(0).toUpperCase() + selectedSiteForBooking.slice(1),
+                notes: notes,
+                urgent: isUrgent
+            };
+
+            userAppointments.push(appointment);
+
+            messageDiv.innerHTML = '<div class="success-message">Appointment booked successfully! Confirmation sent to your email.</div>';
+            setTimeout(() => showAccount(), 2000);
+        }
+
+        function clearFormInputs(inputIds) {
+            inputIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.value = '';
+                }
+            });
+        }
+
+        function clearMessages() {
+            document.querySelectorAll('[id$="-message"]').forEach(msg => {
+                msg.innerHTML = '';
+            });
+        }
+    </script>
+</body>
+</html>
